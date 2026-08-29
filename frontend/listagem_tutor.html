@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Tutores</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #A8E6CF;
+      color: #333;
+      margin: 0;
+      padding: 90px 20px 20px;
+    }
+
+    .menu-principal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 15px 30px;
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .menu-principal > a,
+    .menu-principal > details > summary {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #6B4FA3;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .menu-principal summary {
+      list-style: none;
+    }
+
+    .menu-principal summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .menu-principal > details {
+      position: relative;
+    }
+
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 170px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .submenu summary,
+    .submenu a {
+      font-family: 'Quicksand', sans-serif;
+      font-size: 15px;
+      font-weight: normal;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .submenu details {
+      padding: 5px;
+    }
+
+    .submenu a {
+      display: block;
+      padding: 5px 10px;
+    }
+
+    .submenu a:hover {
+      color: #6B4FA3;
+    }
+
+    .submenu-interno {
+      padding-left: 15px;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-family: 'Poppins', sans-serif;
+      color: #6B4FA3;
+      font-size: 36px;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 10px;
+      background-color: #6B4FA3;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    button:hover {
+      background-color: #563a8c;
+    }
+
+    #novoTutor {
+      margin-bottom: 20px;
+      background-color: #4CAF50;
+    }
+
+    .filtros {
+      margin-bottom: 20px;
+    }
+
+    .filtros label {
+      display: block;
+      margin-bottom: 5px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: bold;
+    }
+
+    .filtros select,
+    .filtros input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .filtros input {
+      width: 250px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    th,
+    td {
+      padding: 14px;
+      border-bottom: 1px solid #ddd;
+      font-family: 'Nunito', sans-serif;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: #C7A4FF;
+      color: #333;
+      font-weight: bold;
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 60px;
+      text-align: center;
+    }
+
+    th:last-child,
+    td:last-child {
+      text-align: center;
+    }
+
+  .acoes button {
+    background-color: #6B4FA3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .acoes button:hover {
+    background-color: #563a8c;
+  }
+
+  .acoes button:nth-child(2) {
+    background-color: #4CAF50;
+  }
+
+  .acoes button:nth-child(2):hover {
+    background-color: #4CAF50;
+  }
+
+  .acoes button:last-child {
+    background-color: #d9534f;
+  }
+
+  .acoes button:last-child:hover {
+    background-color: #c9302c;
+  }
+  </style>
+</head>
+
+<body>
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+
+    <details>
+      <summary>Cadastros</summary>
+
+      <div class="submenu submenu-operacoes">
+        <details>
+          <summary>Tutores</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_tutor.html">Cadastrar</a>
+            <a href="listagem_tutor.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Pacientes</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_animal.html">Cadastrar</a>
+            <a href="cadastro_animal.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Veterinários</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_veterinario.html">Cadastrar</a>
+            <a href="cadastro_veterinario.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Procedimentos</summary>
+          <div class="submenu-interno">
+            <a href="procedimentos.html">Cadastrar</a>
+            <a href="procedimentos.html">Listar</a>
+          </div>
+        </details>
+      </div>
+    </details>
+  </nav>
+
+  <h1>Tutores</h1>
+
+  <button id="novoTutor">
+    <span class="material-icons">person_add</span>
+    Novo Tutor
+  </button>
+
+  <div class="filtros">
+    <label for="campoPesquisa">Pesquisar tutor</label>
+
+    <select id="tipoPesquisa">
+      <option value="nome">Nome</option>
+      <option value="cpf">CPF</option>
+    </select>
+
+    <input type="search" id="campoPesquisa" placeholder="Digite para pesquisar">
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Email</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="listaTutores"></tbody>
+  </table>
+
+  <script>
+    let tutores = [];
+
+    function normalizarTexto(valor) {
+      return String(valor || '').toLocaleLowerCase('pt-BR').trim();
+    }
+
+    function normalizarCpf(valor) {
+      return String(valor || '').replace(/\D/g, '');
+    }
+
+    function renderizarTutores() {
+      const tipoPesquisa = document.getElementById('tipoPesquisa').value;
+      const termoOriginal = document.getElementById('campoPesquisa').value;
+      const pesquisaCpf = tipoPesquisa === 'cpf' || /^[\d.\-\s]+$/.test(termoOriginal.trim());
+      const termo = pesquisaCpf ? normalizarCpf(termoOriginal) : normalizarTexto(termoOriginal);
+
+      const resultados = tutores.filter((tutor) => {
+        const valor = pesquisaCpf ? normalizarCpf(tutor.cpf) : normalizarTexto(tutor.nome);
+        return valor.includes(termo);
+      });
+
+      const tabela = document.getElementById('listaTutores');
+
+      tabela.innerHTML = resultados.length
+        ? resultados.map((tutor) => `
+          <tr>
+            <td>${tutor.id}</td>
+            <td>${tutor.nome || ''}</td>
+            <td>${tutor.telefone || ''}</td>
+            <td>${tutor.email || ''}</td>
+            <td class="acoes">
+              <button onclick="detalhar(${tutor.id})">
+                <span class="material-icons">visibility</span>
+                Detalhar
+              </button>
+              <button onclick="editar(${tutor.id})">
+                <span class="material-icons">edit</span>
+                Editar
+              </button>
+              <button onclick="excluir(${tutor.id})">
+                <span class="material-icons">delete</span>
+                Excluir
+              </button>
+            </td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="5">Nenhum tutor encontrado.</td></tr>';
+    }
+
+    async function carregarTutores() {
+      try {
+        const resposta = await fetch('http://localhost:3000/tutores');
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(resultado.error || 'Não foi possível carregar os tutores.');
+        }
+
+        tutores = resultado;
+        renderizarTutores();
+      } catch (error) {
+        document.getElementById('listaTutores').innerHTML =
+          `<tr><td colspan="5">${error.message}</td></tr>`;
+      }
+    }
+
+    function detalhar(id) {
+      window.location.href = 'detalhes_tutor.html?id=' + id;
+    }
+
+    function editar(id) {
+      window.location.href = 'editar_tutor.html?id=' + id;
+    }
+
+    async function excluir(id) {
+      const confirmar = confirm('Tem certeza que deseja excluir este tutor?');
+
+      if (!confirmar) return;
+
+      try {
+        const resposta = await fetch(`http://localhost:3000/tutores/${id}`, {
+          method: 'DELETE'
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(resultado.error || 'Não foi possível excluir o tutor.');
+        }
+
+        alert(resultado.message);
+        carregarTutores();
+      } catch (error) {
+        alert(`Erro ao excluir tutor: ${error.message}`);
+      }
+    }
+
+    document.getElementById('novoTutor').onclick = () => {
+      window.location.href = 'cadastro_tutor.html';
+    };
+
+    document.getElementById('tipoPesquisa').addEventListener('change', renderizarTutores);
+    document.getElementById('campoPesquisa').addEventListener('input', renderizarTutores);
+
+    carregarTutores();
+  </script>
+</body>
+</html>

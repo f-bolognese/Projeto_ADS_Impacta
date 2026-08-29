@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vital Vet - Atendimentos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <details>
+      <summary>Cadastros</summary>
+      <div class="submenu submenu-operacoes">
+        <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
+        <details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="cadastro_animal.html">Listar</a></div></details>
+        <details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="cadastro_veterinario.html">Listar</a></div></details>
+        <details><summary>Procedimentos</summary><div class="submenu-interno"><a href="procedimentos.html">Cadastrar</a><a href="procedimentos.html">Listar</a></div></details>
+      </div>
+    </details>
+  </nav>
+
+  <main class="pagina-atendimentos">
+    <h1>Atendimentos do dia</h1>
+    <div class="filtro-data">
+      <label for="dataAtendimento">Data</label>
+      <input type="date" id="dataAtendimento">
+    </div>
+    <p id="mensagemAtendimentos" class="mensagem"></p>
+    <div id="listaAtendimentos" class="lista-atendimentos"></div>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:3000';
+    const dataAtendimento = document.getElementById('dataAtendimento');
+    const mensagem = document.getElementById('mensagemAtendimentos');
+    const lista = document.getElementById('listaAtendimentos');
+
+    function dataLocal() {
+      const agora = new Date();
+      const ano = agora.getFullYear();
+      const mes = String(agora.getMonth() + 1).padStart(2, '0');
+      const dia = String(agora.getDate()).padStart(2, '0');
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function exibirAtendimentos(atendimentos) {
+      lista.innerHTML = '';
+      if (!atendimentos.length) {
+        mensagem.textContent = 'Nenhum atendimento encontrado para esta data.';
+        return;
+      }
+
+      mensagem.textContent = '';
+      atendimentos.forEach((atendimento) => {
+        const card = document.createElement('article');
+        card.className = 'atendimento-card';
+        const procedimentos = atendimento.procedimentos.length
+          ? atendimento.procedimentos.map((procedimento) => `${procedimento.nome} (R$ ${Number(procedimento.valor).toFixed(2)})`).join(', ')
+          : 'Nenhum procedimento registrado';
+        card.innerHTML = `
+          <h2>${atendimento.hora || 'Horário não informado'} - ${atendimento.animal_nome}</h2>
+          <p><strong>Tutor:</strong> ${atendimento.tutor_nome}</p>
+          <p><strong>Veterinário:</strong> ${atendimento.veterinario_nome}</p>
+          <p><strong>Procedimentos:</strong> ${procedimentos}</p>
+          <p><strong>Total:</strong> R$ ${Number(atendimento.total).toFixed(2)}</p>
+        `;
+        lista.appendChild(card);
+      });
+    }
+
+    async function carregarAtendimentos() {
+      mensagem.textContent = 'Carregando atendimentos...';
+      lista.innerHTML = '';
+      try {
+        const resposta = await fetch(`${API_URL}/atendimentos?data=${dataAtendimento.value}`);
+        const resultado = await resposta.json();
+        if (!resposta.ok) throw new Error(resultado.error || 'Não foi possível carregar os atendimentos.');
+        exibirAtendimentos(resultado);
+      } catch (error) {
+        mensagem.textContent = error instanceof TypeError && error.message === 'Failed to fetch'
+          ? 'Não foi possível conectar à API. Verifique se o backend está rodando na porta 3000.'
+          : error.message;
+      }
+    }
+
+    dataAtendimento.value = dataLocal();
+    dataAtendimento.addEventListener('change', carregarAtendimentos);
+    carregarAtendimentos();
+  </script>
+</body>
+</html>

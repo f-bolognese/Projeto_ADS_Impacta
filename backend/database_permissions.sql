@@ -1,0 +1,37 @@
+ALTER TABLE public.tutor
+ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+
+DO $$
+BEGIN
+	IF EXISTS (
+		SELECT 1
+		FROM public.veterinario
+		WHERE crmv IS NULL OR especialidade IS NULL
+	) THEN
+		RAISE EXCEPTION 'Existem veterinarios sem crmv ou especialidade; preencha esses dados antes de aplicar NOT NULL.';
+	END IF;
+
+	ALTER TABLE public.veterinario
+		ALTER COLUMN crmv SET NOT NULL,
+		ALTER COLUMN especialidade SET NOT NULL;
+END
+$$;
+
+GRANT USAGE ON SCHEMA public TO febsi;
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON ALL TABLES IN SCHEMA public TO febsi;
+GRANT USAGE, SELECT
+ON ALL SEQUENCES IN SCHEMA public TO febsi;
+
+-- Mantem as permissoes para novas tabelas e sequencias criadas pelo proprietario.
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO febsi;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT USAGE, SELECT ON SEQUENCES TO febsi;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO febsi;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+GRANT USAGE, SELECT ON SEQUENCES TO febsi;

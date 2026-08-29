@@ -1,0 +1,189 @@
+.menu-principal {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	max-width: 750px;
+	margin: 0 auto 24px;
+	padding: 12px 16px;
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.menu-principal > a,
+.menu-principal summary {
+	color: #6B4FA3;
+	font-family: 'Nunito', sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.menu-principal details {
+	position: relative;
+}
+
+.menu-principal summary {
+	list-style: none;
+}
+
+.menu-principal summary::-webkit-details-marker {
+	display: none;
+}
+
+.menu-principal summary::after {
+	content: ' ▾';
+}
+
+.submenu {
+	position: absolute;
+	top: 28px;
+	left: 0;
+	min-width: 150px;
+	padding: 8px;
+	background: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.submenu a {
+	display: block;
+	padding: 8px;
+	color: #333;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.submenu a:hover,
+.menu-principal > a:hover,
+.menu-principal summary:hover {
+	color: #563a8c;
+}
+
+.submenu-operacoes {
+	min-width: 190px;
+}
+
+.submenu-operacoes details {
+	position: relative;
+}
+
+.submenu-interno {
+	margin: 4px 0 4px 12px;
+	padding-left: 8px;
+	border-left: 2px solid #C7A4FF;
+}
+
+.submenu-interno a {
+	padding: 6px 8px;
+}
+
+.filtros {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 auto 20px;
+	max-width: 750px;
+}
+
+.filtros label {
+	font-weight: bold;
+}
+
+.filtros select,
+.filtros input {
+	padding: 9px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.filtros input {
+	flex: 1;
+}
+
+.acoes {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.mensagem-erro {
+	color: #b42318;
+	font-weight: bold;
+}
+
+.pagina-atendimentos {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.pagina-atendimentos h1 {
+	color: #6B4FA3;
+	font-family: 'Poppins', sans-serif;
+}
+
+.filtro-data {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.filtro-data label {
+	font-weight: bold;
+}
+
+.filtro-data input {
+	padding: 9px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.mensagem {
+	font-weight: bold;
+}
+
+.lista-atendimentos {
+	display: grid;
+	gap: 16px;
+}
+
+.atendimento-card {
+	padding: 22px;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.atendimento-card h2 {
+	margin-top: 0;
+	color: #6B4FA3;
+	font-family: 'Poppins', sans-serif;
+}
+
+.atendimento-card p {
+	margin: 8px 0;
+}
+
+@media (max-width: 600px) {
+	.menu-principal,
+	.filtros {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.submenu {
+		position: static;
+		margin-top: 8px;
+	}
+
+	.filtro-data {
+		align-items: stretch;
+		flex-direction: column;
+	}
+}

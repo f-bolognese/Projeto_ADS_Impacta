@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes do Tutor</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #A8E6CF;
+      color: #333;
+      margin: 0;
+      padding: 90px 20px 20px;
+    }
+
+    .menu-principal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 15px 30px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .menu-principal > a,
+    .menu-principal > details > summary {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #6B4FA3;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .menu-principal summary {
+      list-style: none;
+    }
+
+    .menu-principal summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .menu-principal > details {
+      position: relative;
+    }
+
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      min-width: 170px;
+    }
+
+    .submenu summary,
+    .submenu a {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: normal;
+      font-size: 15px;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .submenu details {
+      padding: 5px;
+    }
+
+    .submenu a {
+      display: block;
+      padding: 5px 10px;
+    }
+
+    .submenu a:hover {
+      color: #6B4FA3;
+    }
+
+    .submenu-interno {
+      padding-left: 15px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px;
+      color: #6B4FA3;
+      max-width: 750px;
+      margin: 0 auto 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 35px;
+      border-radius: 16px;
+      max-width: 750px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .campo {
+      margin-bottom: 12px;
+    }
+
+    .campo strong {
+      color: #6B4FA3;
+    }
+
+    .botoes-acoes {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    button:hover {
+      background-color: #4CAF50;
+    }
+
+    #voltar {
+      background-color: #563a8c;
+    }
+
+    #editar {
+      background-color: #4caf50;
+    }
+
+    #excluir {
+      background-color: #d9534f;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="menu-principal" aria-label="Navegação principal">
+
+    <a href="index.html">Início</a>
+
+    <details>
+      <summary>Cadastros</summary>
+
+      <div class="submenu submenu-operacoes">
+
+        <details>
+          <summary>Tutores</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_tutor.html">Cadastrar</a>
+            <a href="listagem_tutor.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Pacientes</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_animal.html">Cadastrar</a>
+            <a href="cadastro_animal.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Veterinários</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_veterinario.html">Cadastrar</a>
+            <a href="cadastro_veterinario.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Procedimentos</summary>
+          <div class="submenu-interno">
+            <a href="procedimentos.html">Cadastrar</a>
+            <a href="procedimentos.html">Listar</a>
+          </div>
+        </details>
+
+      </div>
+    </details>
+
+  </nav>
+
+  <h1>Detalhes do Tutor</h1>
+
+  <div class="card" id="cardTutor">
+
+    <div class="campo">
+      <strong>ID:</strong> <span id="id"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Nome:</strong> <span id="nome"></span>
+    </div>
+
+    <div class="campo">
+      <strong>CPF:</strong> <span id="cpf"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Telefone:</strong> <span id="telefone"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Endereço:</strong> <span id="endereco"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Email:</strong> <span id="email"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Data de Nascimento:</strong>
+      <span id="data_nascimento"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Animais vinculados:</strong>
+    </div>
+
+    <ul id="animais" class="lista-animais"></ul>
+
+    <div class="botoes-acoes">
+
+      <button id="voltar">
+        <span class="material-icons">arrow_back</span>
+        Voltar
+      </button>
+
+      <button id="editar">
+        <span class="material-icons">edit</span>
+        Editar
+      </button>
+
+      <button id="excluir">
+        <span class="material-icons">delete</span>
+        Excluir
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function carregarTutor() {
+
+      if (!/^\d+$/.test(id || '') || Number(id) <= 0) {
+
+        document.getElementById('cardTutor').innerHTML =
+          '<p class="mensagem-erro">Tutor inválido. Volte para a listagem e escolha um tutor.</p>';
+
+        return;
+      }
+
+      try {
+
+        const resposta =
+          await fetch(`http://localhost:3000/tutores/${id}`);
+
+        const tutor =
+          await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(
+            tutor.error || 'Tutor não encontrado.'
+          );
+        }
+
+        document.getElementById('id').innerText =
+          tutor.id ?? '';
+
+        document.getElementById('nome').innerText =
+          tutor.nome ?? '';
+
+        document.getElementById('cpf').innerText =
+          tutor.cpf ?? '';
+
+        document.getElementById('telefone').innerText =
+          tutor.telefone ?? '';
+
+        document.getElementById('endereco').innerText =
+          tutor.endereco ?? '';
+
+        document.getElementById('email').innerText =
+          tutor.email ?? '';
+
+        document.getElementById('data_nascimento').innerText =
+          tutor.data_nascimento?.slice(0, 10) ?? '';
+
+
+        const animais =
+          document.getElementById('animais');
+
+        if (!tutor.animais?.length) {
+
+          animais.innerHTML =
+            '<li>Nenhum animal vinculado.</li>';
+
+        } else {
+
+          tutor.animais.forEach((animal) => {
+
+            const item =
+              document.createElement('li');
+
+            item.textContent =
+              `${animal.nome} (ID: ${animal.id})`;
+
+            animais.appendChild(item);
+
+          });
+
+        }
+
+      } catch (error) {
+
+        document.getElementById('cardTutor').innerHTML =
+          `<p class="mensagem-erro">${error.message}</p>`;
+
+      }
+    }
+
+
+    document.getElementById('voltar').onclick = () => {
+
+      window.location.href =
+        'listagem_tutor.html';
+
+    };
+
+
+    document.getElementById('editar').onclick = () => {
+
+      window.location.href =
+        `editar_tutor.html?id=${id}`;
+
+    };
+
+
+    document.getElementById('excluir').onclick = async () => {
+
+      const confirmar =
+        confirm("Tem certeza que deseja excluir este tutor?");
+
+      if (!confirmar) return;
+
+      const resposta =
+        await fetch(
+          `http://localhost:3000/tutores/${id}`,
+          {
+            method: 'DELETE'
+          }
+        );
+
+      const resultado =
+        await resposta.json();
+
+      alert(
+        resultado.message ||
+        resultado.error
+      );
+
+      window.location.href =
+        'listagem_tutor.html';
+
+    };
+
+
+    carregarTutor();
+
+  </script>
+
+</body>
+</html>

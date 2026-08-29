@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Vital Vet - Início</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #A8E6CF;
+      margin: 0;
+      padding: 32px;
+    }
+
+    .pagina-inicial {
+      display: grid;
+      grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
+      align-items: center;
+      gap: 48px;
+      max-width: 1100px;
+      min-height: calc(100vh - 64px);
+      margin: auto;
+    }
+
+    .marca {
+      display: flex;
+      justify-content: center;
+    }
+
+    .logo {
+      display: block;
+      width: min(580px, 100%);
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    }
+
+    .bloco {
+      background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .bloco h2 {
+      font-family: 'Poppins', sans-serif;
+      color: #6B4FA3;
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .opcoes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .botao {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #E7D7FF;
+      color: #333;
+      min-height: 20px;
+      box-sizing: border-box;
+      padding: 8px;
+      border-radius: 12px;
+      transition: 0.3s;
+      font-family: 'Quicksand', sans-serif;
+      text-decoration: none;
+    }
+
+    .botao img {
+      width: 112px;
+      height: 112px;
+      object-fit: contain;
+      flex: 0 0 104px;
+    }
+
+    .botao:hover {
+      background-color: #DCC7FF;
+    }
+
+    .botao:focus-visible {
+      outline: 3px solid #563a8c;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 20px 16px;
+      }
+
+      .pagina-inicial {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        min-height: auto;
+      }
+
+      .logo {
+        width: min(480px, 86vw);
+      }
+
+      .bloco {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .bloco {
+        padding: 22px;
+      }
+
+      .opcoes {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="pagina-inicial">
+    <div class="marca">
+      <img src="logo_vital_vet.png" class="logo" alt="Vital Vet">
+    </div>
+
+    <section class="bloco" aria-labelledby="titulo-opcoes">
+      <h1 id="titulo-opcoes">Painel de Acesso</h1>
+      <div class="opcoes">
+        <a class="botao" href="listagem_tutor.html">
+          <img src="tutores.png" alt="Tutores">
+        </a>
+        <a class="botao" href="cadastro_animal.html">
+          <img src="pacientes.png" alt="Pacientes">
+        </a>
+        <a class="botao" href="cadastro_veterinario.html">
+          <img src="veterinarios.png" alt="Veterinários">
+        </a>
+        <a class="botao" href="procedimentos.html">
+          <img src="procedimentos.png" alt="Procedimentos">
+        </a>
+        <a class="botao" href="total_procedimentos.html">
+          <img src="total%20a%20pagar.png" alt="Total a pagar">
+        </a>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>
