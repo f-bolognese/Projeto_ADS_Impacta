@@ -9,11 +9,34 @@ O Vital Vet foi pensado para facilitar o controle administrativo de uma clínica
 ## Funcionalidades principais
 
 - Cadastro e gerenciamento de tutores
-- Cadastro de animais vinculados a cada tutor
+- Cadastro e gerenciamento de animais, também chamados de pacientes
+- Vínculo entre animais e seus respectivos tutores
+- Listagem, visualização, edição e exclusão de animais cadastrados
 - Registro de veterinários
 - Registro de atendimentos (vinculados a animal e veterinário)
 - Associação de procedimentos aos atendimentos
 - Visualização de procedimentos por atendimento
+
+## AC 1: Cadastro de tutores
+
+Na AC 1, o foco é a implementação do cadastro e do gerenciamento de tutores.
+O sistema permite cadastrar, listar, pesquisar, visualizar, editar e excluir as
+informações dos responsáveis pelos animais atendidos na clínica.
+
+Durante o cadastro, o CPF do tutor é validado para evitar informações
+inconsistentes ou duplicadas. A exclusão também considera os vínculos existentes
+no sistema, impedindo a remoção de tutores que possuam animais relacionados.
+
+## AC 2: Cadastro de animais
+
+Na AC 2, o foco é a implementação do cadastro e do gerenciamento de animais,
+também chamados de pacientes. O sistema permite cadastrar, listar, visualizar,
+editar e excluir animais, mantendo cada paciente vinculado ao seu respectivo
+tutor.
+
+Na visualização dos detalhes de um paciente, também é possível acessar as
+informações do tutor relacionado. Essa integração facilita a consulta dos dados
+dos responsáveis durante o atendimento da clínica.
 
 ## Requisitos
 
@@ -67,6 +90,7 @@ Projeto/
 │   ├── database_permissions.sql
 │   ├── db.js
 │   ├── package.json
+│   ├── routes_animal.js
 │   ├── routes_tutor.js
 │   ├── routes_veterinaria.js
 │   └── server.js
@@ -77,9 +101,12 @@ Projeto/
 │   ├── cadastro_animal.html
 │   ├── cadastro_tutor.html
 │   ├── cadastro_veterinario.html
+│   ├── detalhes_animal.html
 │   ├── detalhes_tutor.html
+│   ├── editar_animal.html
 │   ├── editar_tutor.html
 │   ├── index.html
+│   ├── listagem_animal.html
 │   ├── listagem_tutor.html
 │   ├── procedimentos.html
 │   ├── script.js
@@ -109,13 +136,21 @@ Principais arquivos:
 
 - `backend/server.js` — inicia o servidor Express e serve o frontend
 - `backend/db.js` — conexão com o PostgreSQL via `pg`
+- `backend/routes_animal.js` — rotas de CRUD para animais
 - `backend/routes_tutor.js` — rotas de CRUD para tutores
-- `backend/routes_veterinaria.js` — rotas de animais, veterinários, procedimentos e atendimentos
+- `backend/routes_veterinaria.js` — rotas de veterinários, procedimentos e atendimentos
 - `backend/database_permissions.sql` — ajustes de permissões do banco
 
 ### Frontend
 
 A interface web fica em `frontend` e é servida diretamente pelo backend. A página principal é `frontend/index.html`.
+
+As páginas relacionadas ao gerenciamento de pacientes são:
+
+- `frontend/cadastro_animal.html` — cadastro de novos animais
+- `frontend/listagem_animal.html` — listagem dos pacientes cadastrados
+- `frontend/detalhes_animal.html` — visualização dos dados do paciente e de seu tutor
+- `frontend/editar_animal.html` — alteração dos dados do paciente
 
 ### Banco de dados
 
@@ -129,18 +164,15 @@ O schema principal está em `database/schema.sql` e define as tabelas:
 - `atendimento_procedimento` — procedimentos associados a cada atendimento
 
 ### Endpoints principais
-
 Tutores
 
 Animais
 
 Veterinários
 
-Procedimentos
+Atendimentos e Procedimentos
 
-Consultas
-
-Procedimentos
+Total a Pagar
 
 ### Observações
 
