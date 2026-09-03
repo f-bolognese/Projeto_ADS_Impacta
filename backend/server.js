@@ -28,6 +28,7 @@ app.get('/dbtest', async (req, res) => {
 
 const tutorRoutes = require('./routes_tutor');
 app.use(tutorRoutes);
+app.use(require('./routes_animal'));
 app.use(require('./routes_veterinaria'));
 
 app.use((err, req, res, next) => {

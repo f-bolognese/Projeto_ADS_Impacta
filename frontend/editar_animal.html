@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Paciente</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #A8E6CF;
+      color: #333;
+      margin: 0;
+      padding: 90px 20px 20px;
+    }
+
+    .menu-principal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 15px 30px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .menu-principal > a,
+    .menu-principal > details > summary {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #6B4FA3;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      min-width: 170px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      color: #6B4FA3;
+      font-size: 36px;
+      max-width: 750px;
+      margin: 0 auto 20px;
+    }
+
+    form {
+      background: #fff;
+      padding: 35px;
+      border-radius: 16px;
+      max-width: 750px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-family: 'Quicksand', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .autocomplete-container {
+      position: relative;
+    }
+
+    #autocomplete_tutores {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      width: 100%;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .autocomplete-item {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .autocomplete-item:hover {
+      background-color: #eee;
+    }
+
+    .botoes-acoes {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    #voltar {
+      background-color: #563a8c;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="menu-principal">
+    <a href="index.html">Início</a>
+
+    <details>
+      <summary>Cadastros</summary>
+
+      <div class="submenu submenu-operacoes">
+
+        <details>
+          <summary>Tutores</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_tutor.html">Cadastrar</a>
+            <a href="listagem_tutor.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Pacientes</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_animal.html">Cadastrar</a>
+            <a href="listagem_animal.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Veterinários</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_veterinario.html">Cadastrar</a>
+            <a href="cadastro_veterinario.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Procedimentos</summary>
+          <div class="submenu-interno">
+            <a href="procedimentos.html">Cadastrar</a>
+            <a href="procedimentos.html">Listar</a>
+          </div>
+        </details>
+
+      </div>
+    </details>
+  </nav>
+
+  <h1>Editar Paciente</h1>
+
+  <form id="formEditarAnimal">
+
+    <label>Nome</label>
+    <input type="text" id="nome" required>
+
+    <label>Espécie</label>
+    <select id="especie" required>
+        <option value="Cão">Cão</option>
+        <option value="Gato">Gato</option>
+    </select>
+
+    <label>Raça</label>
+    <input type="text" id="raca">
+
+    <label>Cor</label>
+    <input type="text" id="cor">
+
+    <label>Peso (kg)</label>
+    <input type="text" id="peso_kg">
+
+    <label>Data de Nascimento</label>
+    <input type="date" id="data_nascimento">
+
+    <label>Tutor</label>
+    <div class="autocomplete-container">
+      <input type="text" id="tutor_nome" placeholder="Digite o nome do tutor">
+      <input type="hidden" id="tutor_id">
+      <div id="autocomplete_tutores"></div>
+    </div>
+
+    <div class="botoes-acoes">
+
+      <button id="voltar" type="button">
+        <span class="material-icons">arrow_back</span>
+        Voltar
+      </button>
+
+      <button type="submit">
+        <span class="material-icons">save</span>
+        Salvar Alterações
+      </button>
+
+    </div>
+
+  </form>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function carregarDados() {
+      const resposta = await fetch(`http://localhost:3000/animais/${id}`);
+      const animal = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(animal.error || 'Paciente não encontrado.');
+      }
+
+      document.getElementById('nome').value = animal.nome;
+      document.getElementById('raca').value = animal.raca || '';
+      document.getElementById('especie').value = animal.especie;
+      document.getElementById('cor').value = animal.cor || '';
+      document.getElementById('peso_kg').value =
+        animal.peso_kg ? animal.peso_kg.toString().replace('.', ',') : '';
+      document.getElementById('data_nascimento').value =
+        animal.data_nascimento ? animal.data_nascimento.slice(0, 10) : '';
+
+      document.getElementById('tutor_nome').value = animal.tutor_nome || '';
+      document.getElementById('tutor_id').value = animal.tutor_id;
+    }
+
+    async function carregarTutores() {
+      const inputNome = document.getElementById('tutor_nome');
+      const inputId = document.getElementById('tutor_id');
+      const lista = document.getElementById('autocomplete_tutores');
+
+      let tutores = [];
+
+      try {
+        const resposta = await fetch(`http://localhost:3000/tutores`);
+        tutores = await resposta.json();
+      } catch (error) {
+        alert('Erro ao carregar tutores: ' + error.message);
+        return;
+      }
+
+      inputNome.addEventListener('input', () => {
+        const texto = inputNome.value.toLowerCase();
+        lista.innerHTML = '';
+
+        if (!texto.trim()) {
+          inputId.value = '';
+          return;
+        }
+
+        const filtrados = tutores.filter(t =>
+          t.nome.toLowerCase().includes(texto)
+        );
+
+        filtrados.forEach(t => {
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          item.textContent = `${t.nome} (ID: ${t.id})`;
+
+          item.onclick = () => {
+            inputNome.value = t.nome;
+            inputId.value = t.id;
+            lista.innerHTML = '';
+          };
+
+          lista.appendChild(item);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.autocomplete-container')) {
+          lista.innerHTML = '';
+        }
+      });
+    }
+
+    document.getElementById('voltar').onclick = () => {
+      window.location.href = 'listagem_animal.html';
+    };
+
+    document.getElementById('formEditarAnimal').onsubmit = async (e) => {
+      e.preventDefault();
+
+      const dados = {
+        nome: document.getElementById('nome').value,
+        especie: document.getElementById('especie').value,
+        raca: document.getElementById('raca').value,
+        cor: document.getElementById('cor').value,
+        peso_kg: document.getElementById('peso_kg').value.replace(',', '.') || null,
+        data_nascimento: document.getElementById('data_nascimento').value || null,
+        tutor_id: Number(document.getElementById('tutor_id').value)
+      };
+
+      const resposta = await fetch(
+        `http://localhost:3000/animais/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        }
+      );
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(resultado.error || 'Não foi possível atualizar o paciente.');
+      }
+
+      alert('Paciente atualizado com sucesso!');
+      window.location.href = 'listagem_animal.html';
+    };
+
+    carregarDados();
+    carregarTutores();
+  </script>
+
+</body>
+</html>

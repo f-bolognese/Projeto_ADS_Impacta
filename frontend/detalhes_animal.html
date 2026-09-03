@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Detalhes do Tutor</title>
+  <title>Detalhes do Paciente</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -137,10 +137,6 @@
       margin: 0;
     }
 
-    button:hover {
-      background-color: #4CAF50;
-    }
-
     #voltar {
       background-color: #563a8c;
     }
@@ -152,13 +148,16 @@
     #excluir {
       background-color: #d9534f;
     }
+
+    #excluir:hover {
+      background-color: #c9302c;
+    }
   </style>
 </head>
 
 <body>
 
   <nav class="menu-principal" aria-label="Navegação principal">
-
     <a href="index.html">Início</a>
 
     <details>
@@ -178,7 +177,7 @@
           <summary>Pacientes</summary>
           <div class="submenu-interno">
             <a href="cadastro_animal.html">Cadastrar</a>
-            <a href="cadastro_animal.html">Listar</a>
+            <a href="listagem_animal.html">Listar</a>
           </div>
         </details>
 
@@ -200,12 +199,11 @@
 
       </div>
     </details>
-
   </nav>
 
-  <h1>Detalhes do Tutor</h1>
+  <h1>Detalhes do Paciente</h1>
 
-  <div class="card" id="cardTutor">
+  <div class="card" id="cardAnimal">
 
     <div class="campo">
       <strong>ID:</strong> <span id="id"></span>
@@ -216,31 +214,32 @@
     </div>
 
     <div class="campo">
-      <strong>CPF:</strong> <span id="cpf"></span>
+      <strong>Espécie:</strong> <span id="especie"></span>
     </div>
 
     <div class="campo">
-      <strong>Telefone:</strong> <span id="telefone"></span>
+      <strong>Raça:</strong> <span id="raca"></span>
     </div>
 
     <div class="campo">
-      <strong>Endereço:</strong> <span id="endereco"></span>
+      <strong>Cor:</strong> <span id="cor"></span>
     </div>
 
     <div class="campo">
-      <strong>Email:</strong> <span id="email"></span>
+      <strong>Peso (kg):</strong> <span id="peso_kg"></span>
     </div>
 
     <div class="campo">
-      <strong>Data de Nascimento:</strong>
-      <span id="data_nascimento"></span>
+      <strong>Data de Nascimento:</strong> <span id="data_nascimento"></span>
     </div>
 
     <div class="campo">
-      <strong>Animais vinculados:</strong>
-    </div>
+      <strong>Tutor:</strong>
+      <a id="link_tutor"
+        style="color:#6B4FA3; text-decoration:underline; cursor:pointer; margin-left:6px;">
+      </a>
 
-    <ul id="animais" class="lista-animais"></ul>
+    </div>
 
     <div class="botoes-acoes">
 
@@ -267,137 +266,69 @@
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
-    async function carregarTutor() {
+    async function carregarAnimal() {
 
       if (!/^\d+$/.test(id || '') || Number(id) <= 0) {
-
-        document.getElementById('cardTutor').innerHTML =
-          '<p class="mensagem-erro">Tutor inválido. Volte para a listagem e escolha um tutor.</p>';
-
+        document.getElementById('cardAnimal').innerHTML =
+          '<p class="mensagem-erro">Paciente inválido. Volte para a listagem e escolha um paciente.</p>';
         return;
       }
 
       try {
-
-        const resposta =
-          await fetch(`http://localhost:3000/tutores/${id}`);
-
-        const tutor =
-          await resposta.json();
+        const resposta = await fetch(`http://localhost:3000/animais/${id}`);
+        const animal = await resposta.json();
 
         if (!resposta.ok) {
-          throw new Error(
-            tutor.error || 'Tutor não encontrado.'
-          );
+          throw new Error(animal.error || 'Paciente não encontrado.');
         }
 
-        document.getElementById('id').innerText =
-          tutor.id ?? '';
-
-        document.getElementById('nome').innerText =
-          tutor.nome ?? '';
-
-        document.getElementById('cpf').innerText =
-          tutor.cpf ?? '';
-
-        document.getElementById('telefone').innerText =
-          tutor.telefone ?? '';
-
-        document.getElementById('endereco').innerText =
-          tutor.endereco ?? '';
-
-        document.getElementById('email').innerText =
-          tutor.email ?? '';
-
+        document.getElementById('id').innerText = animal.id ?? '';
+        document.getElementById('nome').innerText = animal.nome ?? '';
+        document.getElementById('especie').innerText = animal.especie ?? '';
+        document.getElementById('raca').innerText = animal.raca ?? '';
+        document.getElementById('cor').innerText = animal.cor ?? '';
+        document.getElementById('peso_kg').innerText =
+          animal.peso_kg ? animal.peso_kg.toString().replace('.', ',') : '';
         document.getElementById('data_nascimento').innerText =
-          tutor.data_nascimento?.slice(0, 10) ?? '';
+          animal.data_nascimento?.slice(0, 10) ?? '';
 
+      const linkTutor = document.getElementById('link_tutor');
+      const nomeTutor = animal.tutor_nome || '(nome não informado)';
+      const idTutor = animal.tutor_id;
 
-        const animais =
-          document.getElementById('animais');
+    linkTutor.innerText = `${nomeTutor} (ID ${idTutor})`;
+    linkTutor.href = `detalhes_tutor.html?id=${idTutor}`;
 
-        if (!tutor.animais?.length) {
-
-          animais.innerHTML =
-            '<li>Nenhum animal vinculado.</li>';
-
-        } else {
-
-          tutor.animais.forEach((animal) => {
-
-            const item =
-              document.createElement('li');
-
-            item.innerHTML = `
-              <a href="detalhes_animal.html?id=${animal.id}"
-                style="color:#6B4FA3; text-decoration:underline;">
-                ${animal.nome} (ID: ${animal.id})
-              </a>
-            `;
-
-
-            animais.appendChild(item);
-
-          });
-
-        }
 
       } catch (error) {
-
-        document.getElementById('cardTutor').innerHTML =
+        document.getElementById('cardAnimal').innerHTML =
           `<p class="mensagem-erro">${error.message}</p>`;
-
       }
     }
 
-
     document.getElementById('voltar').onclick = () => {
-
-      window.location.href =
-        'listagem_tutor.html';
-
+      window.location.href = 'listagem_animal.html';
     };
-
 
     document.getElementById('editar').onclick = () => {
-
-      window.location.href =
-        `editar_tutor.html?id=${id}`;
-
+      window.location.href = `editar_animal.html?id=${id}`;
     };
-
 
     document.getElementById('excluir').onclick = async () => {
-
-      const confirmar =
-        confirm("Tem certeza que deseja excluir este tutor?");
-
+      const confirmar = confirm("Tem certeza que deseja excluir este paciente?");
       if (!confirmar) return;
 
-      const resposta =
-        await fetch(
-          `http://localhost:3000/tutores/${id}`,
-          {
-            method: 'DELETE'
-          }
-        );
+      const resposta = await fetch(`http://localhost:3000/animais/${id}`, {
+        method: 'DELETE'
+      });
 
-      const resultado =
-        await resposta.json();
+      const resultado = await resposta.json();
 
-      alert(
-        resultado.message ||
-        resultado.error
-      );
-
-      window.location.href =
-        'listagem_tutor.html';
-
+      alert(resultado.message || resultado.error);
+      window.location.href = 'listagem_animal.html';
     };
 
-
-    carregarTutor();
-
+    carregarAnimal();
   </script>
 
 </body>

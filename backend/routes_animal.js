@@ -2,8 +2,9 @@ const express = require('express');
 const pool = require('./db');
 
 const router = express.Router();
-const fields = ['nome', 'cpf', 'telefone', 'endereco', 'data_nascimento', 'email'];
-const textLimits = { nome: 100, cpf: 14, telefone: 20, endereco: 200, email: 255 };
+
+const fields = ['nome', 'data_nascimento', 'especie', 'raca', 'cor', 'peso_kg', 'tutor_id'];
+const textLimits = { nome: 100, raca: 100, cor: 50 };
 
 function validateId(value) {
   return /^\d+$/.test(value) && Number(value) > 0;
@@ -30,11 +31,7 @@ function validateFields(body) {
 
 function databaseError(res, error) {
   if (error.code === '23503') {
-    return res.status(409).json({ error: 'O tutor possui registros relacionados e nao pode ser excluido.' });
-  }
-
-  if (error.code === '23505') {
-    return res.status(409).json({ error: 'Ja existe um tutor com esse CPF.' });
+    return res.status(409).json({ error: 'O tutor informado nao existe ou o animal possui registros relacionados.' });
   }
 
   if (error.code === '42501') {
@@ -48,29 +45,30 @@ function databaseError(res, error) {
   return res.status(500).json({ error: error.message });
 }
 
-router.post('/tutores', async (req, res) => {
-  const missing = missingFields(req.body, ['nome', 'cpf']);
+router.post('/animais', async (req, res) => {
+  const missing = missingFields(req.body, ['nome', 'tutor_id']);
   const validationError = validateFields(req.body);
 
   if (missing.length) {
     return res.status(400).json({ error: `Campos obrigatorios: ${missing.join(', ')}.` });
   }
 
+  if (!validateId(req.body.tutor_id)) {
+    return res.status(400).json({ error: 'tutor_id deve ser um numero inteiro positivo.' });
+  }
+
   if (validationError) {
     return res.status(400).json({ error: validationError });
   }
 
-  if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(req.body.cpf)) {
-    return res.status(400).json({ error: 'O CPF deve estar no formato 000.000.000-00.' });
-  }
-
   try {
-    const { nome, cpf, telefone, endereco, data_nascimento, email } = req.body;
+    const { nome, data_nascimento, especie, raca, cor, peso_kg, tutor_id } = req.body;
+
     const result = await pool.query(
-      `INSERT INTO public.tutor (nome, cpf, telefone, endereco, data_nascimento, email)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO public.animal (nome, data_nascimento, especie, raca, cor, peso_kg, tutor_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [nome, cpf, telefone ?? null, endereco ?? null, data_nascimento ?? null, email ?? null]
+      [nome, data_nascimento ?? null, especie, raca ?? null, cor ?? null, peso_kg ?? null, tutor_id]
     );
 
     return res.status(201).json(result.rows[0]);
@@ -79,44 +77,32 @@ router.post('/tutores', async (req, res) => {
   }
 });
 
-router.get('/tutores', async (req, res) => {
+router.get('/animais', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM public.tutor ORDER BY id');
+    const result = await pool.query('SELECT * FROM public.animal ORDER BY id');
     return res.status(200).json(result.rows);
   } catch (error) {
     return databaseError(res, error);
   }
 });
 
-router.get('/tutores/:id', async (req, res) => {
+router.get('/animais/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
   try {
     const result = await pool.query(
-      `SELECT t.*,
-              COALESCE(
-                json_agg(
-                  json_build_object(
-                    'id', a.id,
-                    'nome', a.nome,
-                    'data_nascimento', a.data_nascimento,
-                    'raca', a.raca,
-                    'cor', a.cor,
-                    'peso_kg', a.peso_kg
-                  ) ORDER BY a.id
-                ) FILTER (WHERE a.id IS NOT NULL),
-                '[]'::json
-              ) AS animais
-       FROM public.tutor t
-       LEFT JOIN public.animal a ON a.tutor_id = t.id
-       WHERE t.id = $1
-       GROUP BY t.id`,
+      `SELECT a.*, COALESCE(t.nome, '') AS tutor_nome
+      FROM public.animal a
+      LEFT JOIN public.tutor t ON t.id = a.tutor_id
+      WHERE a.id = $1`,
       [req.params.id]
     );
+
+
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Animal nao encontrado.' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -125,15 +111,20 @@ router.get('/tutores/:id', async (req, res) => {
   }
 });
 
-router.put('/tutores/:id', async (req, res) => {
+router.put('/animais/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
-  const missing = missingFields(req.body, ['nome', 'cpf']);
+  const missing = missingFields(req.body, ['nome', 'tutor_id']);
   const validationError = validateFields(req.body);
+
   if (missing.length) {
     return res.status(400).json({ error: `Campos obrigatorios: ${missing.join(', ')}.` });
+  }
+
+  if (!validateId(req.body.tutor_id)) {
+    return res.status(400).json({ error: 'tutor_id deve ser um numero inteiro positivo.' });
   }
 
   if (validationError) {
@@ -141,17 +132,18 @@ router.put('/tutores/:id', async (req, res) => {
   }
 
   try {
-    const { nome, cpf, telefone, endereco, data_nascimento, email } = req.body;
+    const { nome, data_nascimento, especie, raca, cor, peso_kg, tutor_id } = req.body;
+
     const result = await pool.query(
-      `UPDATE public.tutor
-       SET nome = $1, cpf = $2, telefone = $3, endereco = $4, data_nascimento = $5, email = $6
-       WHERE id = $7
+      `UPDATE public.animal
+       SET nome = $1, data_nascimento = $2, especie = $3, raca = $4, cor = $5, peso_kg = $6, tutor_id = $7
+       WHERE id = $8
        RETURNING *`,
-      [nome, cpf, telefone ?? null, endereco ?? null, data_nascimento ?? null, email ?? null, req.params.id]
+      [nome, data_nascimento ?? null, especie, raca ?? null, cor ?? null, peso_kg ?? null, tutor_id, req.params.id]
     );
 
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Animal nao encontrado.' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -160,21 +152,20 @@ router.put('/tutores/:id', async (req, res) => {
   }
 });
 
-router.patch('/tutores/:id', async (req, res) => {
+router.patch('/animais/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
   const providedFields = Object.keys(req.body);
   const validationError = validateFields(req.body);
+
   if (!providedFields.length) {
     return res.status(400).json({ error: 'Informe ao menos um campo para atualizar.' });
   }
 
-  const requiredPatchFields = missingFields(req.body, ['nome', 'cpf']);
-  const invalidRequiredPatchFields = requiredPatchFields.filter((field) => providedFields.includes(field));
-  if (invalidRequiredPatchFields.length) {
-    return res.status(400).json({ error: `Os campos nao podem ser vazios: ${invalidRequiredPatchFields.join(', ')}.` });
+  if (req.body.tutor_id && !validateId(req.body.tutor_id)) {
+    return res.status(400).json({ error: 'tutor_id deve ser um numero inteiro positivo.' });
   }
 
   if (validationError) {
@@ -187,12 +178,12 @@ router.patch('/tutores/:id', async (req, res) => {
 
   try {
     const result = await pool.query(
-      `UPDATE public.tutor SET ${assignments.join(', ')} WHERE id = $${values.length} RETURNING *`,
+      `UPDATE public.animal SET ${assignments.join(', ')} WHERE id = $${values.length} RETURNING *`,
       values
     );
 
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Animal nao encontrado.' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -201,18 +192,19 @@ router.patch('/tutores/:id', async (req, res) => {
   }
 });
 
-router.delete('/tutores/:id', async (req, res) => {
+router.delete('/animais/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
   try {
-    const result = await pool.query('DELETE FROM public.tutor WHERE id = $1 RETURNING id', [req.params.id]);
+    const result = await pool.query('DELETE FROM public.animal WHERE id = $1 RETURNING id', [req.params.id]);
+
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Animal nao encontrado.' });
     }
 
-    return res.status(200).json({ message: 'Tutor excluido com sucesso.', id: result.rows[0].id });
+    return res.status(200).json({ message: 'Animal excluido com sucesso.', id: result.rows[0].id });
   } catch (error) {
     return databaseError(res, error);
   }
