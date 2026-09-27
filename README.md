@@ -16,6 +16,7 @@ O Vital Vet foi pensado para facilitar o controle administrativo de uma clínica
 - Registro de atendimentos (vinculados a animal e veterinário)
 - Cadastro, listagem, detalhes, edição e exclusão de serviços
 - Associação de serviços aos atendimentos, com valor registrado no momento do vínculo
+- Remoção ou substituição de um serviço aplicado incorretamente em um atendimento
 - Visualização dos serviços e do total por atendimento
 
 ## AC 1: Cadastro de tutores
@@ -38,6 +39,23 @@ tutor.
 Na visualização dos detalhes de um paciente, também é possível acessar as
 informações do tutor relacionado. Essa integração facilita a consulta dos dados
 dos responsáveis durante o atendimento da clínica.
+
+## AC 3: Veterinários, serviços e atendimentos
+
+Na AC 3, o foco é ampliar o gerenciamento da clínica com o cadastro e a
+administração de veterinários e serviços, além do registro de atendimentos
+vinculados a pacientes e veterinários. O sistema permite cadastrar, listar,
+visualizar, editar e excluir esses registros, bem como associar serviços aos
+atendimentos.
+
+Caso um serviço seja associado incorretamente, é possível substituí-lo no próprio
+atendimento, sem criar outro registro de atendimento. Assim, os demais dados da
+consulta são mantidos.
+
+## Próxima etapa: AC 4
+
+A AC 4 dará sequência ao projeto com a implementação do cálculo e do registro do
+valor total a pagar pelo atendimento.
 
 ## Requisitos
 
@@ -104,24 +122,38 @@ Projeto/
 │   ├── db.js
 │   ├── package.json
 │   ├── routes_animal.js
+│   ├── routes_atendimento.js
+│   ├── routes_servico.js
 │   ├── routes_tutor.js
 │   ├── routes_veterinaria.js
 │   └── server.js
 ├── database/
+│   ├── allow_nullable_service_value.sql
 │   └── schema.sql
 ├── frontend/
 │   ├── atendimentos.html
 │   ├── cadastro_animal.html
+│   ├── cadastro_atendimento.html
+│   ├── cadastro_servico.html
 │   ├── cadastro_tutor.html
 │   ├── cadastro_veterinario.html
 │   ├── detalhes_animal.html
+│   ├── detalhes_atendimento.html
+│   ├── detalhes_servico.html
 │   ├── detalhes_tutor.html
+│   ├── detalhes_veterinario.html
 │   ├── editar_animal.html
+│   ├── editar_atendimento.html
+│   ├── editar_servico.html
 │   ├── editar_tutor.html
+│   ├── editar_veterinario.html
 │   ├── index.html
 │   ├── listagem_animal.html
+│   ├── listagem_atendimento.html
+│   ├── listagem_servico.html
 │   ├── listagem_tutor.html
-│   ├── procedimentos.html
+│   ├── listagem_veterinario.html
+│   ├── servicos.html
 │   ├── script.js
 │   ├── style.css
 │   └── total_procedimentos.html
@@ -150,8 +182,10 @@ Principais arquivos:
 - `backend/server.js` — inicia o servidor Express e serve o frontend
 - `backend/db.js` — conexão com o PostgreSQL via `pg`
 - `backend/routes_animal.js` — rotas de CRUD para animais
+- `backend/routes_atendimento.js` — rotas de atendimentos e serviços associados
+- `backend/routes_servico.js` — rotas de CRUD para serviços
 - `backend/routes_tutor.js` — rotas de CRUD para tutores
-- `backend/routes_veterinaria.js` — rotas de veterinários, serviços e atendimentos
+- `backend/routes_veterinaria.js` — rotas de veterinários
 - `backend/database_permissions.sql` — ajustes de permissões do banco
 
 ### Frontend
@@ -165,6 +199,11 @@ As páginas relacionadas ao gerenciamento de pacientes são:
 - `frontend/detalhes_animal.html` — visualização dos dados do paciente e de seu tutor
 - `frontend/editar_animal.html` — alteração dos dados do paciente
 
+As páginas de veterinários, serviços e atendimentos seguem o mesmo fluxo de
+cadastro, listagem, detalhes e edição. Em `frontend/detalhes_atendimento.html`,
+também é possível adicionar, remover ou substituir serviços associados ao
+atendimento.
+
 ### Banco de dados
 
 O schema principal está em `database/schema.sql` e define as tabelas:
@@ -177,15 +216,13 @@ O schema principal está em `database/schema.sql` e define as tabelas:
 - `atendimento_servico` — serviços associados a cada atendimento e valor cobrado
 
 ### Endpoints principais
-Tutores
 
-Animais
-
-Veterinários
-
-Atendimentos e Procedimentos
-
-Total a Pagar
+- `/tutores` — cadastro e gerenciamento de tutores
+- `/animais` — cadastro e gerenciamento de pacientes
+- `/veterinarios` — cadastro e gerenciamento de veterinários
+- `/servicos` — cadastro e gerenciamento de serviços
+- `/atendimentos` — registro e gerenciamento de atendimentos
+- `/atendimentos/:id/servicos` — associação, consulta, substituição e remoção de serviços de um atendimento
 
 ### Observações
 
