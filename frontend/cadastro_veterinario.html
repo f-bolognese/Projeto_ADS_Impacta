@@ -1,17 +1,305 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<meta charset="UTF-8">
-	<title>Vital Vet - Cadastro de Veterinário</title>
-	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Cadastrar Veterinário</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #A8E6CF;
+      color: #333;
+      margin: 0;
+      padding: 90px 20px 20px;
+    }
+
+    /* MENU PADRONIZADO */
+    .menu-principal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 15px 30px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .menu-principal > a,
+    .menu-principal > details > summary {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #6B4FA3;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .menu-principal summary {
+      list-style: none;
+    }
+
+    .menu-principal summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .menu-principal > details {
+      position: relative;
+    }
+
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      min-width: 170px;
+    }
+
+    .submenu summary,
+    .submenu a {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: normal;
+      font-size: 15px;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .submenu details {
+      padding: 5px;
+    }
+
+    .submenu a {
+      display: block;
+      padding: 5px 10px;
+    }
+
+    .submenu a:hover {
+      color: #6B4FA3;
+    }
+
+    .submenu-interno {
+      padding-left: 15px;
+    }
+
+    /* TÍTULO */
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px;
+      color: #6B4FA3;
+      max-width: 750px;
+      margin: 0 auto 20px;
+    }
+
+    /* CARD PADRONIZADO */
+    form {
+      background: #fff;
+      padding: 35px;
+      border-radius: 16px;
+      max-width: 750px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-family: 'Quicksand', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .botoes-acoes {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    #voltar {
+      background-color: #563a8c;
+    }
+  </style>
 </head>
+
 <body>
-	<nav class="menu-principal" aria-label="Navegação principal">
-		<a href="index.html">Início</a>
-		<details><summary>Cadastros</summary><div class="submenu submenu-operacoes"><details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details><details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="cadastro_animal.html">Listar</a></div></details><details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="cadastro_veterinario.html">Listar</a></div></details><details><summary>Procedimentos</summary><div class="submenu-interno"><a href="procedimentos.html">Cadastrar</a><a href="procedimentos.html">Listar</a></div></details></div></details>
-	</nav>
-	<h1>Cadastro de Veterinário</h1>
-	<p>Esta funcionalidade ainda está em desenvolvimento.</p>
+
+  <!-- MENU PADRONIZADO -->
+  <nav class="menu-principal" aria-label="Navegação principal">
+
+    <a href="index.html">Início</a>
+
+    <details>
+      <summary>Cadastros</summary>
+
+      <div class="submenu submenu-operacoes">
+
+        <details>
+          <summary>Tutores</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_tutor.html">Cadastrar</a>
+            <a href="listagem_tutor.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Pacientes</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_animal.html">Cadastrar</a>
+            <a href="listagem_animal.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Veterinários</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_veterinario.html">Cadastrar</a>
+            <a href="listagem_veterinario.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Serviços</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_servico.html">Cadastrar</a>
+            <a href="listagem_servico.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Atendimentos</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_atendimento.html">Cadastrar</a>
+            <a href="listagem_atendimento.html">Listar</a>
+          </div>
+        </details>
+
+      </div>
+    </details>
+
+  </nav>
+
+  <h1>Cadastrar Veterinário</h1>
+
+  <form id="formCadastro">
+
+    <label>Nome do Veterinário</label>
+    <input type="text" id="nome_veterinario" required>
+
+    <label>CRMV-SP</label>
+    <input
+      type="text"
+      id="crmv"
+      maxlength="5"
+      pattern="[0-9]{5}"
+      required
+    >
+
+    <label>Especialidade</label>
+    <select id="especialidade" required>
+      <option value="">Selecione...</option>
+      <option value="clínica geral">Clínica Geral</option>
+      <option value="clínica geral e cirurgias de tecidos moles">Clínica Geral e Cirurgias de Tecidos Moles</option>
+      <option value="neurologia">Neurologia</option>
+      <option value="dermatologia">Dermatologia</option>
+      <option value="cardiologia">Cardiologia</option>
+      <option value="nefrologia">Nefrologia</option>
+      <option value="endocrinologia">Endocrinologia</option>
+      <option value="felinos">Felinos</option>
+      <option value="geriatria">Geriatria</option>
+    </select>
+
+    <div class="botoes-acoes">
+      <button id="voltar" type="button">
+        <span class="material-icons">arrow_back</span>
+        Voltar
+      </button>
+
+      <button type="submit">
+        <span class="material-icons">save</span>
+        Salvar
+      </button>
+    </div>
+
+  </form>
+
+  <script>
+    // Impede letras e caracteres especiais, aceita apenas números
+    document.getElementById('crmv').addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '').slice(0, 5);
+    });
+
+    document.getElementById('voltar').onclick = () => {
+      window.location.href = 'listagem_veterinario.html';
+    };
+
+    document.getElementById('formCadastro').onsubmit = async (e) => {
+      e.preventDefault();
+
+      const crmv = document.getElementById('crmv').value;
+
+      if (!/^[0-9]{5}$/.test(crmv)) {
+        alert("O CRMV-SP deve conter exatamente 5 dígitos numéricos.");
+        return;
+      }
+
+      const dados = {
+        nome: document.getElementById('nome_veterinario').value,
+        crmv: crmv,
+        especialidade: document.getElementById('especialidade').value
+      };
+
+      const resposta = await fetch(
+        'http://localhost:3000/veterinarios',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        }
+      );
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(resultado.error || 'Não foi possível cadastrar o veterinário.');
+      }
+
+      alert('Veterinário cadastrado com sucesso!');
+      window.location.href = 'listagem_veterinario.html';
+    };
+  </script>
+
 </body>
 </html>

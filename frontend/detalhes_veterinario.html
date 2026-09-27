@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes do Veterinário</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #A8E6CF;
+      color: #333;
+      margin: 0;
+      padding: 90px 20px 20px;
+    }
+
+    /* MENU PADRONIZADO */
+    .menu-principal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 15px 30px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .menu-principal > a,
+    .menu-principal > details > summary {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #6B4FA3;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .menu-principal summary {
+      list-style: none;
+    }
+
+    .menu-principal summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .menu-principal > details {
+      position: relative;
+    }
+
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      min-width: 170px;
+    }
+
+    .submenu summary,
+    .submenu a {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: normal;
+      font-size: 15px;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .submenu details {
+      padding: 5px;
+    }
+
+    .submenu a {
+      display: block;
+      padding: 5px 10px;
+    }
+
+    .submenu a:hover {
+      color: #6B4FA3;
+    }
+
+    .submenu-interno {
+      padding-left: 15px;
+    }
+
+    /* TÍTULO */
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px;
+      color: #6B4FA3;
+      max-width: 750px;
+      margin: 0 auto 20px;
+    }
+
+    /* CARD PADRONIZADO */
+    .card {
+      background: #fff;
+      padding: 35px;
+      border-radius: 16px;
+      max-width: 750px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .campo {
+      margin-bottom: 12px;
+    }
+
+    .campo strong {
+      color: #6B4FA3;
+    }
+
+    .botoes-acoes {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    #voltar { background-color: #563a8c; }
+    #editar { background-color: #4caf50; }
+    #excluir { background-color: #d9534f; }
+
+    #tabelaAtendimentos {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    #tabelaAtendimentos th,
+    #tabelaAtendimentos td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    #tabelaAtendimentos th {
+      background-color: #C7A4FF;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- MENU PADRONIZADO -->
+  <nav class="menu-principal" aria-label="Navegação principal">
+
+    <a href="index.html">Início</a>
+
+    <details>
+      <summary>Cadastros</summary>
+
+      <div class="submenu submenu-operacoes">
+
+        <details>
+          <summary>Tutores</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_tutor.html">Cadastrar</a>
+            <a href="listagem_tutor.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Pacientes</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_animal.html">Cadastrar</a>
+            <a href="listagem_animal.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Veterinários</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_veterinario.html">Cadastrar</a>
+            <a href="listagem_veterinario.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Serviços</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_servico.html">Cadastrar</a>
+            <a href="listagem_servico.html">Listar</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>Atendimentos</summary>
+          <div class="submenu-interno">
+            <a href="cadastro_atendimento.html">Cadastrar</a>
+            <a href="listagem_atendimento.html">Listar</a>
+          </div>
+        </details>
+
+      </div>
+    </details>
+
+  </nav>
+
+  <h1>Detalhes do Veterinário</h1>
+
+  <div class="card" id="cardVeterinario">
+
+    <div class="campo">
+      <strong>ID:</strong> <span id="id"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Nome:</strong> <span id="nome_veterinario"></span>
+    </div>
+
+    <div class="campo">
+      <strong>CRMV-SP:</strong> <span id="crmv"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Especialidade:</strong> <span id="especialidade"></span>
+    </div>
+
+    <div class="campo">
+      <strong>Pacientes atendidos:</strong>
+    </div>
+
+    <!-- FILTRO POR DATA -->
+    <div class="campo">
+      <label for="filtroData" style="color:#6B4FA3; font-weight:bold;">Filtrar por data:</label>
+      <input type="date" id="filtroData" style="padding:8px; border-radius:10px; border:1px solid #ccc;">
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table id="tabelaAtendimentos">
+        <thead>
+          <tr><th>ID do atendimento</th><th>Data</th><th>Animal atendido</th></tr>
+        </thead>
+        <tbody id="atendimentos"></tbody>
+      </table>
+    </div>
+
+    <div class="botoes-acoes">
+
+      <button id="voltar">
+        <span class="material-icons">arrow_back</span>
+        Voltar
+      </button>
+
+      <button id="editar">
+        <span class="material-icons">edit</span>
+        Editar
+      </button>
+
+      <button id="excluir">
+        <span class="material-icons">delete</span>
+        Excluir
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+    let atendimentosVeterinario = [];
+
+    function capitalizarEspecialidade(texto) {
+      if (!texto) return "";
+      return texto
+        .split(" ")
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+        .join(" ");
+    }
+
+    function renderizarMensagemAtendimentos(texto) {
+      const tabela = document.getElementById('atendimentos');
+      tabela.replaceChildren();
+      const linha = tabela.insertRow();
+      const celula = linha.insertCell();
+      celula.colSpan = 3;
+      celula.textContent = texto;
+    }
+
+    function renderizarListaAtendimentos(atendimentos) {
+      const tabela = document.getElementById('atendimentos');
+      const filtroData = document.getElementById('filtroData').value;
+
+      const filtrados = [...atendimentos]
+        .filter((atendimento) => !filtroData || String(atendimento.data).slice(0, 10) === filtroData)
+        .sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')));
+      tabela.replaceChildren();
+
+      if (!filtrados.length) {
+        renderizarMensagemAtendimentos('Nenhum atendimento encontrado.');
+        return;
+      }
+
+      filtrados.forEach((atendimento) => {
+        const linha = tabela.insertRow();
+        const celulaId = linha.insertCell();
+        const atendimentoId = Number(atendimento.id);
+        if (Number.isSafeInteger(atendimentoId) && atendimentoId > 0) {
+          const linkAtendimento = document.createElement('a');
+          linkAtendimento.href = `detalhes_atendimento.html?id=${encodeURIComponent(atendimentoId)}`;
+          linkAtendimento.textContent = String(atendimentoId);
+          linkAtendimento.setAttribute('aria-label', `Ver detalhes do atendimento ${atendimentoId}`);
+          celulaId.appendChild(linkAtendimento);
+        } else {
+          celulaId.textContent = '—';
+        }
+
+        const data = atendimento.data ? String(atendimento.data).slice(0, 10) : '';
+        linha.insertCell().textContent = data
+          ? new Date(`${data}T00:00:00`).toLocaleDateString('pt-BR')
+          : '—';
+
+        const animal = linha.insertCell();
+        const animalId = Number(atendimento.animal_id);
+        if (!atendimento.animal_nome) {
+          animal.textContent = '—';
+        } else if (Number.isSafeInteger(animalId) && animalId > 0) {
+          const link = document.createElement('a');
+          link.href = `detalhes_animal.html?id=${encodeURIComponent(animalId)}`;
+          link.textContent = `${atendimento.animal_nome} (ID: ${animalId})`;
+          link.style.color = '#6B4FA3';
+          link.style.textDecoration = 'underline';
+          animal.appendChild(link);
+        } else {
+          animal.textContent = atendimento.animal_nome;
+        }
+      });
+    }
+
+    async function carregarVeterinario() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!/^\d+$/.test(id || '') || Number(id) <= 0) {
+        document.getElementById('cardVeterinario').innerHTML =
+          '<p class="mensagem-erro">Veterinário inválido. Volte para a listagem.</p>';
+        return;
+      }
+
+      try {
+        const resposta = await fetch(`http://localhost:3000/veterinarios/${id}`);
+        const vet = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(vet.error || 'Veterinário não encontrado.');
+        }
+
+        vetGlobal = vet;
+
+        document.getElementById('id').innerText = vet.id ?? '';
+        document.getElementById('nome_veterinario').innerText = vet.nome ?? '';
+        document.getElementById('crmv').innerText = vet.crmv ?? '';
+        document.getElementById('especialidade').innerText =
+          capitalizarEspecialidade(vet.especialidade ?? '');
+
+        const respostaAtendimentos = await fetch(`http://localhost:3000/atendimentos?veterinario_id=${encodeURIComponent(id)}`);
+        const atendimentos = await respostaAtendimentos.json();
+        if (!respostaAtendimentos.ok) {
+          throw new Error(atendimentos.error || 'Não foi possível carregar os atendimentos do veterinário.');
+        }
+        if (!Array.isArray(atendimentos)) {
+          throw new Error('A API retornou uma lista de atendimentos inválida.');
+        }
+
+        atendimentosVeterinario = atendimentos;
+        renderizarListaAtendimentos(atendimentosVeterinario);
+
+      } catch (error) {
+        document.getElementById('cardVeterinario').innerHTML =
+          `<p class="mensagem-erro">${error.message}</p>`;
+      }
+    }
+
+    document.getElementById('filtroData').addEventListener('change', () => {
+      renderizarListaAtendimentos(atendimentosVeterinario);
+    });
+
+    document.getElementById('voltar').onclick = () => {
+      window.location.href = 'listagem_veterinario.html';
+    };
+
+    document.getElementById('editar').onclick = () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      window.location.href = `editar_veterinario.html?id=${id}`;
+    };
+
+    document.getElementById('excluir').onclick = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      const confirmar = confirm("Tem certeza que deseja excluir este veterinário?");
+      if (!confirmar) return;
+
+      const resposta = await fetch(`http://localhost:3000/veterinarios/${id}`, {
+        method: 'DELETE'
+      });
+
+      const resultado = await resposta.json();
+
+      alert(resultado.message || resultado.error);
+      window.location.href = 'listagem_veterinario.html';
+    };
+
+    carregarVeterinario();
+  </script>
+
+</body>
+</html>

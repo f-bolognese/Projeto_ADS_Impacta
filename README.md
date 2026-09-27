@@ -14,8 +14,9 @@ O Vital Vet foi pensado para facilitar o controle administrativo de uma clínica
 - Listagem, visualização, edição e exclusão de animais cadastrados
 - Registro de veterinários
 - Registro de atendimentos (vinculados a animal e veterinário)
-- Associação de procedimentos aos atendimentos
-- Visualização de procedimentos por atendimento
+- Cadastro, listagem, detalhes, edição e exclusão de serviços
+- Associação de serviços aos atendimentos, com valor registrado no momento do vínculo
+- Visualização dos serviços e do total por atendimento
 
 ## AC 1: Cadastro de tutores
 
@@ -68,7 +69,19 @@ PORT=3000
 psql -d vitalvet -f ../database/schema.sql
 ```
 
-5. Inicie o servidor:
+Para atualizar um banco existente e permitir valores nulos no catálogo de serviços:
+
+```bash
+psql -d vitalvet -f ../database/allow_nullable_service_value.sql
+```
+
+5. Conceda as permissões do banco ao usuário da aplicação (como proprietário das tabelas ou administrador):
+
+```bash
+psql -d vitalvet -f database_permissions.sql
+```
+
+6. Inicie o servidor:
 
 ```bash
 npm start
@@ -138,7 +151,7 @@ Principais arquivos:
 - `backend/db.js` — conexão com o PostgreSQL via `pg`
 - `backend/routes_animal.js` — rotas de CRUD para animais
 - `backend/routes_tutor.js` — rotas de CRUD para tutores
-- `backend/routes_veterinaria.js` — rotas de veterinários, procedimentos e atendimentos
+- `backend/routes_veterinaria.js` — rotas de veterinários, serviços e atendimentos
 - `backend/database_permissions.sql` — ajustes de permissões do banco
 
 ### Frontend
@@ -159,9 +172,9 @@ O schema principal está em `database/schema.sql` e define as tabelas:
 - `tutor` — tutores dos animais
 - `animal` — animais cadastrados (pacientes)
 - `veterinario` — veterinários responsáveis pelos atendimentos
-- `procedimento` — catálogo de procedimentos e serviços
+- `servico` — catálogo de serviços
 - `atendimento` — atendimentos realizados (vinculam animal e veterinário)
-- `atendimento_procedimento` — procedimentos associados a cada atendimento
+- `atendimento_servico` — serviços associados a cada atendimento e valor cobrado
 
 ### Endpoints principais
 Tutores

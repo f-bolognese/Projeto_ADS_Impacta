@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Serviço | Vital Vet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="servicos-page">
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <details><summary>Cadastros</summary><div class="submenu submenu-operacoes">
+      <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
+      <details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="listagem_animal.html">Listar</a></div></details>
+      <details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="listagem_veterinario.html">Listar</a></div></details>
+      <details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details>
+      <details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details>
+    </div></details>
+  </nav>
+  <main class="servicos-conteudo">
+    <header class="cabecalho-pagina"><h1>Editar Serviço</h1></header>
+    <form id="formServico" class="servicos-formulario">
+      <label for="nome">Nome do serviço</label>
+      <input type="text" id="nome" name="nome" maxlength="150" required disabled>
+      <label for="categoria">Categoria</label>
+      <select id="categoria" name="categoria" disabled>
+        <option value="">Selecione uma categoria</option>
+        <option value="consulta">Consulta</option>
+        <option value="consulta especialista">Consulta especialista</option>
+        <option value="consulta emergência">Consulta emergência</option>
+        <option value="cirurgia">Cirurgia</option>
+        <option value="cirurgia especialista">Cirurgia especialista</option>
+        <option value="vacina">Vacina</option>
+        <option value="exame">Exame</option>
+        <option value="aplicação de medicação">Aplicação de medicação</option>
+      </select>
+      <label for="valor">Valor (R$)</label>
+      <input type="number" id="valor" name="valor" min="0" max="99999999.99" step="0.01" disabled>
+      <p id="mensagem" class="mensagem" role="alert" aria-live="polite">Carregando serviço...</p>
+      <div class="servicos-botoes">
+        <a class="botao-link" id="voltar" href="listagem_servico.html"><span class="material-icons" aria-hidden="true">arrow_back</span>Voltar</a>
+        <button class="botao-principal" type="submit" id="salvar" disabled><span class="material-icons" aria-hidden="true">save</span>Salvar alterações</button>
+      </div>
+    </form>
+  </main>
+  <script>
+    const id = new URLSearchParams(window.location.search).get('id');
+    const form = document.getElementById('formServico');
+    const message = document.getElementById('mensagem');
+    const fields = ['nome', 'categoria', 'valor'].map((field) => document.getElementById(field));
+    const saveButton = document.getElementById('salvar');
+    const categoryInput = document.getElementById('categoria');
+    const valueInput = document.getElementById('valor');
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+
+    function updateValueRequirement() {
+      valueInput.required = categoryInput.value !== 'aplicação de medicação';
+    }
+
+    categoryInput.addEventListener('change', updateValueRequirement);
+    async function readJson(response) {
+      if (!(response.headers.get('content-type') || '').includes('application/json')) throw new Error(`A API retornou uma resposta inesperada (HTTP ${response.status}).`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Falha na requisição (HTTP ${response.status}).`);
+      return data;
+    }
+    async function carregarServico() {
+      if (!id || !/^\d+$/.test(id) || !Number.isSafeInteger(Number(id)) || Number(id) < 1) {
+        message.classList.add('mensagem-erro');
+        message.textContent = 'O identificador do serviço é inválido.';
+        return;
+      }
+      try {
+        const servico = await readJson(await fetch(`${API_BASE}/servicos/${encodeURIComponent(id)}`));
+        document.getElementById('nome').value = servico.nome || '';
+        valueInput.value = servico.valor ?? '';
+        const category = document.getElementById('categoria');
+        if (servico.categoria && !Array.from(category.options).some((option) => option.value === servico.categoria)) category.add(new Option(servico.categoria, servico.categoria));
+        category.value = servico.categoria || '';
+        updateValueRequirement();
+        fields.forEach((field) => { field.disabled = false; });
+        saveButton.disabled = false;
+        document.getElementById('voltar').href = `detalhes_servico.html?id=${encodeURIComponent(id)}`;
+        message.textContent = '';
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    }
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message.className = 'mensagem';
+      message.textContent = '';
+      const payload = { nome: document.getElementById('nome').value.trim(), categoria: categoryInput.value || null, valor: valueInput.value === '' ? null : Number(valueInput.value) };
+      try {
+        await readJson(await fetch(`${API_BASE}/servicos/${encodeURIComponent(id)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }));
+        window.location.href = `detalhes_servico.html?id=${encodeURIComponent(id)}`;
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    });
+    carregarServico();
+  </script>
+</body>
+</html>

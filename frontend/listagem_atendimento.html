@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atendimentos | Vital Vet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="servicos-page">
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <details><summary>Cadastros</summary><div class="submenu submenu-operacoes">
+      <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
+      <details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="listagem_animal.html">Listar</a></div></details>
+      <details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="listagem_veterinario.html">Listar</a></div></details>
+      <details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details>
+      <details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details>
+    </div></details>
+  </nav>
+  <main class="servicos-conteudo">
+    <header class="cabecalho-pagina"><h1>Atendimentos</h1></header>
+    <div class="servicos-toolbar">
+      <p id="mensagem" class="mensagem" role="status" aria-live="polite">Carregando atendimentos...</p>
+      <a class="botao-link botao-principal" href="cadastro_atendimento.html"><span class="material-icons" aria-hidden="true">add</span>Novo atendimento</a>
+    </div>
+    <div class="servicos-toolbar">
+      <label for="filtroData">Data</label>
+      <input type="date" id="filtroData">
+      <button class="botao-link" type="button" id="limparFiltro"><span class="material-icons" aria-hidden="true">event_busy</span>Todas as datas</button>
+    </div>
+    <div class="servicos-tabela-wrapper">
+      <table>
+        <thead><tr><th>ID</th><th>Data</th><th>Horário</th><th>Paciente</th><th>Veterinário</th><th>Total (R$)</th><th class="acoes">Ações</th></tr></thead>
+        <tbody id="tabelaAtendimentos"></tbody>
+      </table>
+    </div>
+  </main>
+  <script>
+    const tableBody = document.getElementById('tabelaAtendimentos');
+    const message = document.getElementById('mensagem');
+    const dateFilter = document.getElementById('filtroData');
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+
+    async function readJson(response) {
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Falha na requisição (HTTP ${response.status}).`);
+      return data;
+    }
+
+    function addCell(row, value) {
+      row.insertCell().textContent = value == null || value === '' ? '—' : String(value);
+    }
+
+    function addAction(cell, label, icon, href, onClick) {
+      const control = onClick ? document.createElement('button') : document.createElement('a');
+      control.className = `botao-acao ${label === 'Editar' ? 'botao-principal' : ''} ${label === 'Excluir' ? 'botao-perigo' : ''}`.trim();
+      control.title = label;
+      control.setAttribute('aria-label', label);
+      if (onClick) {
+        control.type = 'button';
+        control.addEventListener('click', onClick);
+      } else {
+        control.href = href;
+      }
+      const iconElement = document.createElement('span');
+      iconElement.className = 'material-icons';
+      iconElement.setAttribute('aria-hidden', 'true');
+      iconElement.textContent = icon;
+      control.append(iconElement, document.createTextNode(label));
+      cell.appendChild(control);
+    }
+
+    function renderRows(attendances) {
+      tableBody.replaceChildren();
+      if (!attendances.length) {
+        const row = tableBody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 7;
+        cell.textContent = 'Nenhum atendimento encontrado.';
+        return;
+      }
+
+      [...attendances]
+        .sort((first, second) => Number(first.id) - Number(second.id))
+        .forEach((attendance) => {
+        const row = tableBody.insertRow();
+        addCell(row, attendance.id);
+        addCell(row, attendance.data ? new Date(`${attendance.data.slice(0, 10)}T00:00:00`).toLocaleDateString('pt-BR') : '');
+        addCell(row, attendance.hora ? attendance.hora.slice(0, 5) : '');
+        addCell(row, attendance.animal_nome);
+        addCell(row, attendance.veterinario_nome);
+        addCell(row, Number(attendance.valor_total ?? attendance.total ?? 0).toFixed(2));
+        const actions = row.insertCell();
+        actions.className = 'acoes';
+        const query = `?id=${encodeURIComponent(attendance.id)}`;
+        addAction(actions, 'Detalhar', 'visibility', `detalhes_atendimento.html${query}`);
+        addAction(actions, 'Editar', 'edit', `editar_atendimento.html${query}`);
+        addAction(actions, 'Excluir', 'delete', null, () => deleteAttendance(attendance.id));
+      });
+    }
+
+    async function loadAttendances() {
+      message.className = 'mensagem';
+      message.textContent = 'Carregando atendimentos...';
+      tableBody.replaceChildren();
+      try {
+        const query = dateFilter.value ? `?data=${encodeURIComponent(dateFilter.value)}` : '';
+        const attendances = await readJson(await fetch(`${API_BASE}/atendimentos${query}`));
+        if (!Array.isArray(attendances)) throw new Error('A API retornou uma lista de atendimentos inválida.');
+        renderRows(attendances);
+        message.textContent = '';
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    }
+
+    async function deleteAttendance(id) {
+      if (!window.confirm('Deseja excluir este atendimento e os serviços associados?')) return;
+      try {
+        await readJson(await fetch(`${API_BASE}/atendimentos/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+        await loadAttendances();
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error.message;
+      }
+    }
+
+    dateFilter.addEventListener('change', loadAttendances);
+    document.getElementById('limparFiltro').addEventListener('click', () => {
+      dateFilter.value = '';
+      loadAttendances();
+    });
+    loadAttendances();
+  </script>
+</body>
+</html>

@@ -78,7 +78,6 @@ if (cpfInput && telefoneInput && formTutor) {
       cpf: cpfInput.value,
       telefone: telefoneInput.value,
       endereco: document.getElementById('endereco').value.trim(),
-      email: document.getElementById('email').value.trim(),
       data_nascimento: document.getElementById('data_nascimento').value || null
     };
 

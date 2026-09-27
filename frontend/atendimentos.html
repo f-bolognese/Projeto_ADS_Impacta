@@ -17,7 +17,8 @@
         <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
         <details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="cadastro_animal.html">Listar</a></div></details>
         <details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="cadastro_veterinario.html">Listar</a></div></details>
-        <details><summary>Procedimentos</summary><div class="submenu-interno"><a href="procedimentos.html">Cadastrar</a><a href="procedimentos.html">Listar</a></div></details>
+        <details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details>
+        <details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details>
       </div>
     </details>
   </nav>
@@ -57,16 +58,26 @@
       atendimentos.forEach((atendimento) => {
         const card = document.createElement('article');
         card.className = 'atendimento-card';
-        const procedimentos = atendimento.procedimentos.length
-          ? atendimento.procedimentos.map((procedimento) => `${procedimento.nome} (R$ ${Number(procedimento.valor).toFixed(2)})`).join(', ')
-          : 'Nenhum procedimento registrado';
-        card.innerHTML = `
-          <h2>${atendimento.hora || 'Horário não informado'} - ${atendimento.animal_nome}</h2>
-          <p><strong>Tutor:</strong> ${atendimento.tutor_nome}</p>
-          <p><strong>Veterinário:</strong> ${atendimento.veterinario_nome}</p>
-          <p><strong>Procedimentos:</strong> ${procedimentos}</p>
-          <p><strong>Total:</strong> R$ ${Number(atendimento.total).toFixed(2)}</p>
-        `;
+          const servicos = Array.isArray(atendimento.servicos) ? atendimento.servicos : [];
+          const heading = document.createElement('h2');
+          heading.textContent = `${atendimento.hora || 'Horário não informado'} - ${atendimento.animal_nome || ''}`;
+          card.appendChild(heading);
+
+          const addField = (label, value) => {
+            const paragraph = document.createElement('p');
+            const strong = document.createElement('strong');
+            strong.textContent = `${label}: `;
+            paragraph.append(strong, document.createTextNode(value));
+            card.appendChild(paragraph);
+          };
+
+          addField('Tutor', atendimento.tutor_nome || '');
+          addField('Veterinário', atendimento.veterinario_nome || '');
+          addField('Serviços', servicos.length
+            ? servicos.map((servico) => `${servico.nome} (R$ ${Number(servico.valor).toFixed(2)})`).join(', ')
+            : 'Nenhum serviço registrado');
+          if (atendimento.observacoes) addField('Observações', atendimento.observacoes);
+          addField('Total', `R$ ${Number(atendimento.total ?? atendimento.valor_total ?? 0).toFixed(2)}`);
         lista.appendChild(card);
       });
     }

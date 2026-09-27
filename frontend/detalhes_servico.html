@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Serviço | Vital Vet</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="servicos-page">
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <details><summary>Cadastros</summary><div class="submenu submenu-operacoes">
+      <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
+      <details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="listagem_animal.html">Listar</a></div></details>
+      <details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="listagem_veterinario.html">Listar</a></div></details>
+      <details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details>
+      <details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details>
+    </div></details>
+  </nav>
+  <main class="servicos-conteudo">
+    <header class="cabecalho-pagina"><h1>Detalhes do Serviço</h1></header>
+    <section class="servicos-card" aria-label="Dados do serviço">
+      <p id="mensagem" class="mensagem" role="status" aria-live="polite">Carregando serviço...</p>
+      <dl id="detalhes" class="servico-detalhes" hidden>
+        <dt>ID</dt><dd id="id"></dd>
+        <dt>Nome</dt><dd id="nome"></dd>
+        <dt>Categoria</dt><dd id="categoria"></dd>
+        <dt>Valor</dt><dd id="valor"></dd>
+      </dl>
+      <div class="servicos-botoes">
+        <a class="botao-link" href="listagem_servico.html"><span class="material-icons" aria-hidden="true">arrow_back</span>Voltar</a>
+        <a class="botao-link botao-principal" id="editar" hidden><span class="material-icons" aria-hidden="true">edit</span>Editar</a>
+        <button class="botao-perigo" type="button" id="excluir" hidden><span class="material-icons" aria-hidden="true">delete</span>Excluir</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    const id = new URLSearchParams(window.location.search).get('id');
+    const message = document.getElementById('mensagem');
+    const details = document.getElementById('detalhes');
+    const editLink = document.getElementById('editar');
+    const deleteButton = document.getElementById('excluir');
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    async function readJson(response) {
+      if (!(response.headers.get('content-type') || '').includes('application/json')) throw new Error(`A API retornou uma resposta inesperada (HTTP ${response.status}).`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Falha na requisição (HTTP ${response.status}).`);
+      return data;
+    }
+    async function carregarServico() {
+      if (!id || !/^\d+$/.test(id) || !Number.isSafeInteger(Number(id)) || Number(id) < 1) {
+        message.classList.add('mensagem-erro');
+        message.textContent = 'O identificador do serviço é inválido.';
+        return;
+      }
+      try {
+        const servico = await readJson(await fetch(`${API_BASE}/servicos/${encodeURIComponent(id)}`));
+        document.getElementById('id').textContent = String(servico.id);
+        document.getElementById('nome').textContent = servico.nome || '';
+        document.getElementById('categoria').textContent = servico.categoria || 'Não informada';
+        document.getElementById('valor').textContent = servico.valor === null || servico.valor === undefined
+          ? 'Calculado no atendimento'
+          : `R$ ${Number(servico.valor).toFixed(2)}`;
+        editLink.href = `editar_servico.html?id=${encodeURIComponent(servico.id)}`;
+        details.hidden = false;
+        editLink.hidden = false;
+        deleteButton.hidden = false;
+        message.textContent = '';
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    }
+    deleteButton.addEventListener('click', async () => {
+      if (!window.confirm('Deseja realmente excluir este serviço?')) return;
+      try {
+        await readJson(await fetch(`${API_BASE}/servicos/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+        window.location.href = 'listagem_servico.html';
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    });
+    carregarServico();
+  </script>
+</body>
+</html>

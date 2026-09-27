@@ -1,0 +1,2 @@
+ALTER TABLE public.servico
+ALTER COLUMN valor DROP NOT NULL;

@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Tutores</title>
+  <title>Veterinários</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -16,6 +17,7 @@
       padding: 90px 20px 20px;
     }
 
+    /* MENU PADRONIZADO */
     .menu-principal {
       position: fixed;
       top: 0;
@@ -26,7 +28,7 @@
       align-items: center;
       gap: 40px;
       padding: 15px 30px;
-      background-color: #fff;
+      background-color: #ffffff;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       z-index: 1000;
     }
@@ -56,18 +58,18 @@
       position: absolute;
       top: 100%;
       left: 0;
-      min-width: 170px;
+      background-color: white;
       padding: 10px;
-      background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      min-width: 170px;
     }
 
     .submenu summary,
     .submenu a {
       font-family: 'Quicksand', sans-serif;
-      font-size: 15px;
       font-weight: normal;
+      font-size: 15px;
       color: #333;
       text-decoration: none;
     }
@@ -89,74 +91,49 @@
       padding-left: 15px;
     }
 
+    /* TÍTULO */
     h1 {
-      margin: 0 0 20px;
       font-family: 'Poppins', sans-serif;
-      color: #6B4FA3;
       font-size: 36px;
+      color: #6B4FA3;
+      max-width: 750px;
+      margin: 0 auto 20px;
     }
 
-    button {
+    /* BOTÃO NOVO */
+    #novoVeterinario {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 10px;
-      background-color: #6B4FA3;
-      color: #fff;
-      cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
-    }
-
-    button:hover {
-      background-color: #563a8c;
-    }
-
-    #novoTutor {
-      margin-bottom: 20px;
-      background-color: #4CAF50;
-    }
-
-    .filtros {
       margin-bottom: 20px;
     }
 
-    .filtros label {
-      display: block;
-      margin-bottom: 5px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: bold;
+    #novoVeterinario:hover {
+      background-color: #45a049;
     }
 
-    .filtros select,
-    .filtros input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-family: 'Quicksand', sans-serif;
-    }
-
-    .filtros input {
-      width: 250px;
-    }
-
+    /* TABELA */
     table {
       width: 100%;
       border-collapse: collapse;
-      overflow: hidden;
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
     }
 
-    th,
-    td {
+    th, td {
       padding: 14px;
       border-bottom: 1px solid #ddd;
-      font-family: 'Nunito', sans-serif;
       text-align: left;
-      vertical-align: middle;
     }
 
     th {
@@ -165,63 +142,64 @@
       font-weight: bold;
     }
 
-    th:first-child,
-    td:first-child {
-      width: 60px;
-      text-align: center;
+    .acoes {
+      display: flex;
+      gap: 8px;
     }
 
-    th:last-child,
-    td:last-child {
-      text-align: center;
+    .acoes button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+      font-family: 'Quicksand', sans-serif;
     }
 
-  .acoes button {
-    background-color: #6B4FA3;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin: 0;
-    white-space: nowrap;
-  }
+    .acoes button:nth-child(1) { background-color: #6B4FA3; }
+    .acoes button:nth-child(2) { background-color: #4CAF50; }
+    .acoes button:nth-child(3) { background-color: #d9534f; }
 
-  .acoes button:hover {
-    background-color: #563a8c;
-  }
+    .filtros {
+      margin-bottom: 20px;
+      font-family: 'Nunito', sans-serif;
+    }
 
-  .acoes button:nth-child(2) {
-    background-color: #4CAF50;
-  }
+    .filtros label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
 
-  .acoes button:nth-child(2):hover {
-    background-color: #4CAF50;
-  }
+    .filtros select,
+    .filtros input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-family: 'Quicksand', sans-serif;
+    }
 
-  .acoes button:last-child {
-    background-color: #d9534f;
-  }
-
-  .acoes button:last-child:hover {
-    background-color: #c9302c;
-  }
+    .filtros input {
+      width: 250px;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- MENU PADRONIZADO -->
   <nav class="menu-principal" aria-label="Navegação principal">
+
     <a href="index.html">Início</a>
 
     <details>
       <summary>Cadastros</summary>
 
       <div class="submenu submenu-operacoes">
+
         <details>
           <summary>Tutores</summary>
           <div class="submenu-interno">
@@ -234,7 +212,7 @@
           <summary>Pacientes</summary>
           <div class="submenu-interno">
             <a href="cadastro_animal.html">Cadastrar</a>
-            <a href="cadastro_animal.html">Listar</a>
+            <a href="listagem_animal.html">Listar</a>
           </div>
         </details>
 
@@ -242,7 +220,7 @@
           <summary>Veterinários</summary>
           <div class="submenu-interno">
             <a href="cadastro_veterinario.html">Cadastrar</a>
-            <a href="cadastro_veterinario.html">Listar</a>
+            <a href="listagem_veterinario.html">Listar</a>
           </div>
         </details>
 
@@ -261,23 +239,25 @@
             <a href="listagem_atendimento.html">Listar</a>
           </div>
         </details>
+
       </div>
     </details>
+
   </nav>
 
-  <h1>Tutores</h1>
+  <h1>Veterinários</h1>
 
-  <button id="novoTutor">
+  <button id="novoVeterinario">
     <span class="material-icons">person_add</span>
-    Novo Tutor
+    Novo Veterinário
   </button>
 
   <div class="filtros">
-    <label for="campoPesquisa">Pesquisar tutor</label>
+    <label for="campoPesquisa">Pesquisar veterinário</label>
 
     <select id="tipoPesquisa">
       <option value="nome">Nome</option>
-      <option value="cpf">CPF</option>
+      <option value="crmv">CRMV-SP</option>
     </select>
 
     <input type="search" id="campoPesquisa" placeholder="Digite para pesquisar">
@@ -288,120 +268,131 @@
       <tr>
         <th>ID</th>
         <th>Nome</th>
-        <th>Telefone</th>
-        <th>CPF</th>
+        <th>CRMV-SP</th>
+        <th>Especialidade</th>
         <th>Ações</th>
       </tr>
     </thead>
-    <tbody id="listaTutores"></tbody>
+    <tbody id="listaVeterinarios"></tbody>
   </table>
 
   <script>
-    let tutores = [];
+    let veterinarios = [];
+
+    function capitalizarEspecialidade(texto) {
+      if (!texto) return "";
+      return texto
+        .split(" ")
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+        .join(" ");
+    }
 
     function normalizarTexto(valor) {
       return String(valor || '').toLocaleLowerCase('pt-BR').trim();
     }
 
-    function normalizarCpf(valor) {
+    function normalizarCrmv(valor) {
       return String(valor || '').replace(/\D/g, '');
     }
 
-    function renderizarTutores() {
+    function renderizarVeterinarios() {
       const tipoPesquisa = document.getElementById('tipoPesquisa').value;
       const termoOriginal = document.getElementById('campoPesquisa').value;
-      const pesquisaCpf = tipoPesquisa === 'cpf' || /^[\d.\-\s]+$/.test(termoOriginal.trim());
-      const termo = pesquisaCpf ? normalizarCpf(termoOriginal) : normalizarTexto(termoOriginal);
 
-      const resultados = tutores.filter((tutor) => {
-        const valor = pesquisaCpf ? normalizarCpf(tutor.cpf) : normalizarTexto(tutor.nome);
+      const pesquisaCrmv = tipoPesquisa === 'crmv' || /^\d+$/.test(termoOriginal.trim());
+      const termo = pesquisaCrmv ? normalizarCrmv(termoOriginal) : normalizarTexto(termoOriginal);
+
+      const resultados = veterinarios.filter((vet) => {
+        const valor = pesquisaCrmv ? normalizarCrmv(vet.crmv) : normalizarTexto(vet.nome);
         return valor.includes(termo);
       });
 
-      const tabela = document.getElementById('listaTutores');
+      const tabela = document.getElementById('listaVeterinarios');
 
       tabela.innerHTML = resultados.length
-        ? resultados.map((tutor) => `
+        ? resultados.map((vet) => `
           <tr>
-            <td>${tutor.id}</td>
-            <td>${tutor.nome || ''}</td>
-            <td>${tutor.telefone || ''}</td>
-            <td>${tutor.cpf || ''}</td>
-            <td class="acoes">
-              <button onclick="detalhar(${tutor.id})">
-                <span class="material-icons">visibility</span>
-                Detalhar
-              </button>
-              <button onclick="editar(${tutor.id})">
-                <span class="material-icons">edit</span>
-                Editar
-              </button>
-              <button onclick="excluir(${tutor.id})">
-                <span class="material-icons">delete</span>
-                Excluir
-              </button>
+            <td>${vet.id}</td>
+            <td>${vet.nome || ''}</td>
+            <td>${vet.crmv || ''}</td>
+            <td>${capitalizarEspecialidade(vet.especialidade || '')}</td>
+
+            <td>
+              <div class="acoes">
+                <button onclick="detalhar(${vet.id})">
+                  <span class="material-icons">visibility</span> Detalhar
+                </button>
+
+                <button onclick="editar(${vet.id})">
+                  <span class="material-icons">edit</span> Editar
+                </button>
+
+                <button onclick="excluir(${vet.id})">
+                  <span class="material-icons">delete</span> Excluir
+                </button>
+              </div>
             </td>
           </tr>
         `).join('')
-        : '<tr><td colspan="5">Nenhum tutor encontrado.</td></tr>';
+        : '<tr><td colspan="5">Nenhum veterinário encontrado.</td></tr>';
     }
 
-    async function carregarTutores() {
+    async function carregarVeterinarios() {
       try {
-        const resposta = await fetch('http://localhost:3000/tutores');
+        const resposta = await fetch('http://localhost:3000/veterinarios');
         const resultado = await resposta.json();
 
         if (!resposta.ok) {
-          throw new Error(resultado.error || 'Não foi possível carregar os tutores.');
+          throw new Error(resultado.error || 'Não foi possível carregar os veterinários.');
         }
 
-        tutores = resultado;
-        renderizarTutores();
+        veterinarios = resultado;
+        renderizarVeterinarios();
       } catch (error) {
-        document.getElementById('listaTutores').innerHTML =
+        document.getElementById('listaVeterinarios').innerHTML =
           `<tr><td colspan="5">${error.message}</td></tr>`;
       }
     }
 
     function detalhar(id) {
-      window.location.href = 'detalhes_tutor.html?id=' + id;
+      window.location.href = 'detalhes_veterinario.html?id=' + id;
     }
 
     function editar(id) {
-      window.location.href = 'editar_tutor.html?id=' + id;
+      window.location.href = 'editar_veterinario.html?id=' + id;
     }
 
     async function excluir(id) {
-      const confirmar = confirm('Tem certeza que deseja excluir este tutor?');
-
+      const confirmar = confirm('Tem certeza que deseja excluir este veterinário?');
       if (!confirmar) return;
 
       try {
-        const resposta = await fetch(`http://localhost:3000/tutores/${id}`, {
+        const resposta = await fetch(`http://localhost:3000/veterinarios/${id}`, {
           method: 'DELETE'
         });
 
         const resultado = await resposta.json();
 
         if (!resposta.ok) {
-          throw new Error(resultado.error || 'Não foi possível excluir o tutor.');
+          throw new Error(resultado.error || 'Não foi possível excluir o veterinário.');
         }
 
         alert(resultado.message);
-        carregarTutores();
+        carregarVeterinarios();
       } catch (error) {
-        alert(`Erro ao excluir tutor: ${error.message}`);
+        alert(`Erro ao excluir veterinário: ${error.message}`);
       }
     }
 
-    document.getElementById('novoTutor').onclick = () => {
-      window.location.href = 'cadastro_tutor.html';
+    document.getElementById('novoVeterinario').onclick = () => {
+      window.location.href = 'cadastro_veterinario.html';
     };
 
-    document.getElementById('tipoPesquisa').addEventListener('change', renderizarTutores);
-    document.getElementById('campoPesquisa').addEventListener('input', renderizarTutores);
+    document.getElementById('tipoPesquisa').addEventListener('change', renderizarVeterinarios);
+    document.getElementById('campoPesquisa').addEventListener('input', renderizarVeterinarios);
 
-    carregarTutores();
+    carregarVeterinarios();
   </script>
+
 </body>
 </html>

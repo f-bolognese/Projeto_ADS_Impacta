@@ -250,3 +250,281 @@
 .acoes button:last-child:hover {
   background-color: #c9302c;
 }
+
+.servicos-page {
+	box-sizing: border-box;
+	min-height: 100vh;
+	margin: 0;
+	padding: 90px 20px 40px;
+	background: #A8E6CF;
+	color: #333;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.servicos-page .menu-principal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: auto;
+	min-width: 200px;
+	max-width: none;
+	margin: 0;
+	gap: 40px;
+	padding: 15px 30px;
+	border-radius: 12px;
+	background: #fff;
+	z-index: 1000;
+}
+
+.servicos-page *,
+.servicos-page *::before,
+.servicos-page *::after {
+	box-sizing: border-box;
+}
+
+.servicos-page [hidden] {
+	display: none !important;
+}
+
+.servicos-conteudo {
+	max-width: 1100px;
+	margin: 0 auto;
+}
+
+.servicos-page .cabecalho-pagina {
+	max-width: 900px;
+	margin: 0 auto 20px;
+}
+
+.servicos-page h1 {
+	margin: 0 0 20px;
+	color: #6B4FA3;
+	font-family: 'Poppins', sans-serif;
+	font-size: 36px;
+}
+
+.servicos-formulario,
+.servicos-card {
+	max-width: 750px;
+	margin: 0 auto;
+	padding: 35px;
+	border-radius: 16px;
+	background: #fff;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	font-family: 'Nunito', sans-serif;
+}
+
+.servicos-formulario label {
+	display: block;
+	margin-top: 10px;
+	font-weight: bold;
+}
+
+.servicos-formulario input,
+.servicos-formulario select,
+.servicos-formulario textarea {
+	width: 100%;
+	margin-top: 5px;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	background: #fff;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.servicos-formulario textarea {
+	resize: vertical;
+}
+
+.servicos-botoes,
+.servicos-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+.servicos-toolbar {
+	justify-content: space-between;
+	margin: 0 0 20px;
+}
+
+.servicos-page button,
+.servicos-page .botao-acao,
+.servicos-page .botao-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-height: 40px;
+	padding: 9px 13px;
+	border: 0;
+	border-radius: 10px;
+	background: #6B4FA3;
+	color: #fff;
+	cursor: pointer;
+	font-family: 'Quicksand', sans-serif;
+	font-size: 15px;
+	text-decoration: none;
+}
+
+.servicos-page button:hover,
+.servicos-page .botao-acao:hover,
+.servicos-page .botao-link:hover {
+	background: #563a8c;
+}
+
+.servicos-page .botao-principal {
+	background: #4CAF50;
+}
+
+.servicos-page .botao-principal:hover {
+	background: #449d48;
+}
+
+.servicos-page .botao-perigo {
+	background: #d9534f;
+}
+
+.servicos-page .botao-perigo:hover {
+	background: #c9302c;
+}
+
+.servicos-page .mensagem {
+	min-height: 1.5em;
+	margin: 12px 0;
+	font-weight: bold;
+}
+
+.servicos-page .mensagem-erro {
+	color: #b42318;
+}
+
+.servicos-tabela-wrapper {
+	overflow-x: auto;
+	border-radius: 16px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.servicos-page table {
+	width: 100%;
+	min-width: 900px;
+	table-layout: auto;
+	border-collapse: collapse;
+	background: #fff;
+}
+
+.servicos-page th,
+.servicos-page td {
+	padding: 14px;
+	border-bottom: 1px solid #ddd;
+	font-family: 'Nunito', sans-serif;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.servicos-page th {
+	background: #C7A4FF;
+	color: #333;
+}
+
+.servicos-page tbody tr:hover {
+	background: #f3eaff;
+}
+
+.servicos-page td.acoes,
+.servicos-page th.acoes {
+	display: table-cell;
+	width: 220px;
+	min-width: 220px;
+	white-space: nowrap;
+}
+
+.servicos-page .acoes .botao-acao {
+	min-height: 36px;
+	padding: 7px 9px;
+	font-size: 14px;
+	margin-right: 6px;
+	white-space: nowrap;
+}
+
+.atendimento-servicos-card {
+	max-width: 1100px;
+	margin: 24px auto 0;
+}
+
+.atendimento-servicos-card > h2,
+.atendimento-servicos-card h3 {
+	margin: 0 0 16px;
+	color: #6B4FA3;
+	font-family: 'Poppins', sans-serif;
+}
+
+.atendimento-servicos-card .servicos-formulario {
+	max-width: none;
+	margin: 24px 0 0;
+	padding: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.atendimento-servicos-card table {
+	min-width: 1000px;
+}
+
+.atendimento-servicos-card table select {
+	width: 100%;
+	min-width: 160px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	background: #fff;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.servico-detalhes {
+	display: grid;
+	grid-template-columns: minmax(120px, 1fr) 2fr;
+	gap: 16px 24px;
+	margin: 0;
+}
+
+.servico-detalhes dt {
+	color: #6B4FA3;
+	font-family: 'Poppins', sans-serif;
+}
+
+.servico-detalhes dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+	.servicos-page {
+		padding: 90px 12px 28px;
+	}
+
+	.servicos-page .cabecalho-pagina {
+		margin-bottom: 16px;
+	}
+
+	.servicos-page h1 {
+		font-size: 28px;
+	}
+
+	.servicos-formulario,
+	.servicos-card {
+		padding: 22px;
+	}
+
+	.servico-detalhes {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	}
+
+	.servico-detalhes dd {
+		margin-bottom: 12px;
+	}
+}

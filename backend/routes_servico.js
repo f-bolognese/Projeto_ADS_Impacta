@@ -2,21 +2,22 @@ const express = require('express');
 const pool = require('./db');
 
 const router = express.Router();
-const fields = ['nome', 'cpf', 'telefone', 'endereco', 'data_nascimento'];
-const textLimits = { nome: 100, cpf: 14, telefone: 20, endereco: 200 };
 
-function normalizeCpf(value) {
-  return String(value ?? '').replace(/\D/g, '');
-}
+// Campos permitidos
+const fields = ['nome', 'categoria', 'valor'];
+const textLimits = { nome: 100, categoria: 50 };
 
+// Função para validar ID
 function validateId(value) {
   return /^\d+$/.test(value) && Number(value) > 0;
 }
 
+// Verifica campos obrigatórios
 function missingFields(body, required) {
   return required.filter((field) => body[field] === undefined || body[field] === null || body[field] === '');
 }
 
+// Valida campos desconhecidos e limites de texto
 function validateFields(body) {
   const unknown = Object.keys(body).filter((field) => !fields.includes(field));
   if (unknown.length) {
@@ -32,13 +33,14 @@ function validateFields(body) {
   return null;
 }
 
+// Tratamento padronizado de erros SQL
 function databaseError(res, error) {
   if (error.code === '23503') {
-    return res.status(409).json({ error: 'O tutor possui registros relacionados e nao pode ser excluido.' });
+    return res.status(409).json({ error: 'O servico possui registros relacionados e nao pode ser excluido.' });
   }
 
   if (error.code === '23505') {
-    return res.status(409).json({ error: 'Ja existe um tutor com esse CPF.' });
+    return res.status(409).json({ error: 'Ja existe um servico com esse nome.' });
   }
 
   if (error.code === '42501') {
@@ -52,8 +54,11 @@ function databaseError(res, error) {
   return res.status(500).json({ error: error.message });
 }
 
-router.post('/tutores', async (req, res) => {
-  const missing = missingFields(req.body, ['nome', 'cpf']);
+// =========================
+// CADASTRAR SERVIÇO
+// =========================
+router.post('/servicos', async (req, res) => {
+  const missing = missingFields(req.body, ['nome', 'categoria']);
   const validationError = validateFields(req.body);
 
   if (missing.length) {
@@ -64,18 +69,14 @@ router.post('/tutores', async (req, res) => {
     return res.status(400).json({ error: validationError });
   }
 
-  const cpf = normalizeCpf(req.body.cpf);
-  if (!/^\d{11}$/.test(cpf)) {
-    return res.status(400).json({ error: 'O CPF deve conter 11 digitos.' });
-  }
-
   try {
-    const { nome, cpf, telefone, endereco, data_nascimento } = req.body;
+    const { nome, categoria, valor } = req.body;
+
     const result = await pool.query(
-      `INSERT INTO public.tutor (nome, cpf, telefone, endereco, data_nascimento)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO public.servico (nome, categoria, valor)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [nome, cpf, telefone ?? null, endereco ?? null, data_nascimento ?? null]
+      [nome, categoria, valor ?? null]
     );
 
     return res.status(201).json(result.rows[0]);
@@ -84,44 +85,34 @@ router.post('/tutores', async (req, res) => {
   }
 });
 
-router.get('/tutores', async (req, res) => {
+// =========================
+// LISTAR SERVIÇOS
+// =========================
+router.get('/servicos', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM public.tutor ORDER BY id');
+    const result = await pool.query('SELECT * FROM public.servico ORDER BY id');
     return res.status(200).json(result.rows);
   } catch (error) {
     return databaseError(res, error);
   }
 });
 
-router.get('/tutores/:id', async (req, res) => {
+// =========================
+// DETALHES DE UM SERVIÇO
+// =========================
+router.get('/servicos/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
   try {
     const result = await pool.query(
-      `SELECT t.*,
-              COALESCE(
-                json_agg(
-                  json_build_object(
-                    'id', a.id,
-                    'nome', a.nome,
-                    'data_nascimento', a.data_nascimento,
-                    'raca', a.raca,
-                    'cor', a.cor,
-                    'peso_kg', a.peso_kg
-                  ) ORDER BY a.id
-                ) FILTER (WHERE a.id IS NOT NULL),
-                '[]'::json
-              ) AS animais
-       FROM public.tutor t
-       LEFT JOIN public.animal a ON a.tutor_id = t.id
-       WHERE t.id = $1
-       GROUP BY t.id`,
+      `SELECT * FROM public.servico WHERE id = $1`,
       [req.params.id]
     );
+
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Servico nao encontrado.' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -130,13 +121,17 @@ router.get('/tutores/:id', async (req, res) => {
   }
 });
 
-router.put('/tutores/:id', async (req, res) => {
+// =========================
+// EDITAR SERVIÇO (PUT)
+// =========================
+router.put('/servicos/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
-  const missing = missingFields(req.body, ['nome', 'cpf']);
+  const missing = missingFields(req.body, ['nome', 'categoria']);
   const validationError = validateFields(req.body);
+
   if (missing.length) {
     return res.status(400).json({ error: `Campos obrigatorios: ${missing.join(', ')}.` });
   }
@@ -145,23 +140,19 @@ router.put('/tutores/:id', async (req, res) => {
     return res.status(400).json({ error: validationError });
   }
 
-  const cpf = normalizeCpf(req.body.cpf);
-  if (!/^\d{11}$/.test(cpf)) {
-    return res.status(400).json({ error: 'O CPF deve conter 11 digitos.' });
-  }
-
   try {
-    const { nome, telefone, endereco, data_nascimento } = req.body;
+    const { nome, categoria, valor } = req.body;
+
     const result = await pool.query(
-      `UPDATE public.tutor
-       SET nome = $1, cpf = $2, telefone = $3, endereco = $4, data_nascimento = $5
-      WHERE id = $6
+      `UPDATE public.servico
+       SET nome = $1, categoria = $2, valor = $3
+       WHERE id = $4
        RETURNING *`,
-      [nome, cpf, telefone ?? null, endereco ?? null, data_nascimento ?? null, req.params.id]
+      [nome, categoria, valor ?? null, req.params.id]
     );
 
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Servico nao encontrado.' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -170,19 +161,24 @@ router.put('/tutores/:id', async (req, res) => {
   }
 });
 
-router.patch('/tutores/:id', async (req, res) => {
+// =========================
+// ATUALIZAÇÃO PARCIAL (PATCH)
+// =========================
+router.patch('/servicos/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
   const providedFields = Object.keys(req.body);
   const validationError = validateFields(req.body);
+
   if (!providedFields.length) {
     return res.status(400).json({ error: 'Informe ao menos um campo para atualizar.' });
   }
 
-  const requiredPatchFields = missingFields(req.body, ['nome', 'cpf']);
+  const requiredPatchFields = missingFields(req.body, ['nome', 'categoria']);
   const invalidRequiredPatchFields = requiredPatchFields.filter((field) => providedFields.includes(field));
+
   if (invalidRequiredPatchFields.length) {
     return res.status(400).json({ error: `Os campos nao podem ser vazios: ${invalidRequiredPatchFields.join(', ')}.` });
   }
@@ -191,22 +187,18 @@ router.patch('/tutores/:id', async (req, res) => {
     return res.status(400).json({ error: validationError });
   }
 
-  if (req.body.cpf !== undefined && !/^\d{11}$/.test(normalizeCpf(req.body.cpf))) {
-    return res.status(400).json({ error: 'O CPF deve conter 11 digitos.' });
-  }
-
   const assignments = providedFields.map((field, index) => `${field} = $${index + 1}`);
-  const values = providedFields.map((field) => field === 'cpf' ? normalizeCpf(req.body[field]) : req.body[field]);
+  const values = providedFields.map((field) => req.body[field]);
   values.push(req.params.id);
 
   try {
     const result = await pool.query(
-      `UPDATE public.tutor SET ${assignments.join(', ')} WHERE id = $${values.length} RETURNING *`,
+      `UPDATE public.servico SET ${assignments.join(', ')} WHERE id = $${values.length} RETURNING *`,
       values
     );
 
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Servico nao encontrado.' });
     }
 
     return res.status(200).json(result.rows[0]);
@@ -215,18 +207,25 @@ router.patch('/tutores/:id', async (req, res) => {
   }
 });
 
-router.delete('/tutores/:id', async (req, res) => {
+// =========================
+// EXCLUIR SERVIÇO
+// =========================
+router.delete('/servicos/:id', async (req, res) => {
   if (!validateId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
   }
 
   try {
-    const result = await pool.query('DELETE FROM public.tutor WHERE id = $1 RETURNING id', [req.params.id]);
+    const result = await pool.query(
+      'DELETE FROM public.servico WHERE id = $1 RETURNING id',
+      [req.params.id]
+    );
+
     if (!result.rowCount) {
-      return res.status(404).json({ error: 'Tutor nao encontrado.' });
+      return res.status(404).json({ error: 'Servico nao encontrado.' });
     }
 
-    return res.status(200).json({ message: 'Tutor excluido com sucesso.', id: result.rows[0].id });
+    return res.status(200).json({ message: 'Servico excluido com sucesso.', id: result.rows[0].id });
   } catch (error) {
     return databaseError(res, error);
   }

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastrar Paciente</title>
+  <title>Editar Veterinário</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -17,6 +17,7 @@
       padding: 90px 20px 20px;
     }
 
+    /* MENU PADRONIZADO */
     .menu-principal {
       position: fixed;
       top: 0;
@@ -90,21 +91,16 @@
       padding-left: 15px;
     }
 
-    .cabecalho-pagina {
-      max-width: 750px;
-      margin: 0 auto 20px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
+    /* TÍTULO */
     h1 {
       font-family: 'Poppins', sans-serif;
-      color: #6B4FA3;
       font-size: 36px;
-      margin: 0;
+      color: #6B4FA3;
+      max-width: 750px;
+      margin: 0 auto 20px;
     }
 
+    /* CARD PADRONIZADO */
     form {
       background: #fff;
       padding: 35px;
@@ -152,10 +148,6 @@
       margin: 0;
     }
 
-    button:hover {
-      background-color: #4CAF50;
-    }
-
     #voltar {
       background-color: #563a8c;
     }
@@ -164,6 +156,7 @@
 
 <body>
 
+  <!-- MENU PADRONIZADO -->
   <nav class="menu-principal" aria-label="Navegação principal">
 
     <a href="index.html">Início</a>
@@ -193,7 +186,7 @@
           <summary>Veterinários</summary>
           <div class="submenu-interno">
             <a href="cadastro_veterinario.html">Cadastrar</a>
-            <a href="cadastro_veterinario.html">Listar</a>
+            <a href="listagem_veterinario.html">Listar</a>
           </div>
         </details>
 
@@ -218,44 +211,37 @@
 
   </nav>
 
-  <div class="cabecalho-pagina">
-    <h1>Cadastrar Animal</h1>
-  </div>
+  <h1>Editar Veterinário</h1>
 
-  <form id="formAnimal">
+  <form id="formEditar">
 
-    <label>Nome</label>
-    <input type="text" id="nome" required>
+    <label>Nome do Veterinário</label>
+    <input type="text" id="nome_veterinario" required>
 
-    <label>Espécie</label>
-    <select id="especie" required>
+    <label>CRMV-SP</label>
+    <input
+      type="text"
+      id="crmv"
+      maxlength="5"
+      pattern="[0-9]{5}"
+      required
+    >
+
+    <label>Especialidade</label>
+    <select id="especialidade" required>
       <option value="">Selecione...</option>
-      <option value="Cão">Cão</option>
-      <option value="Gato">Gato</option>
+      <option value="clínica geral">Clínica Geral</option>
+      <option value="clínica geral e cirurgias de tecidos moles">Clínica Geral e Cirurgias de Tecidos Moles</option>
+      <option value="neurologia">Neurologia</option>
+      <option value="dermatologia">Dermatologia</option>
+      <option value="cardiologia">Cardiologia</option>
+      <option value="nefrologia">Nefrologia</option>
+      <option value="endocrinologia">Endocrinologia</option>
+      <option value="felinos">Felinos</option>
+      <option value="geriatria">Geriatria</option>
     </select>
 
-    <label>Raça</label>
-    <input type="text" id="raca">
-
-    <label>Cor</label>
-    <input type="text" id="cor">
-
-    <label>Peso (kg)</label>
-    <input type="text" id="peso_kg" inputmode="decimal">
-
-
-    <label>Data de Nascimento</label>
-    <input type="date" id="data_nascimento">
-
-    <label>Tutor</label>
-    <div class="autocomplete-container">
-      <input id="tutor_nome" type="text" autocomplete="off" required>
-      <div id="autocomplete_tutores" class="autocomplete-list"></div>
-      <input type="hidden" id="tutor_id">
-    </div>
-
     <div class="botoes-acoes">
-
       <button id="voltar" type="button">
         <span class="material-icons">arrow_back</span>
         Voltar
@@ -263,14 +249,75 @@
 
       <button type="submit">
         <span class="material-icons">save</span>
-        Salvar
+        Salvar Alterações
       </button>
-
     </div>
 
   </form>
 
-  <script src="script.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function carregarDados() {
+      const resposta = await fetch(`http://localhost:3000/veterinarios/${id}`);
+      const vet = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(vet.error || 'Veterinário não encontrado.');
+      }
+
+      document.getElementById('nome_veterinario').value = vet.nome;
+      document.getElementById('crmv').value = vet.crmv;
+      document.getElementById('especialidade').value = vet.especialidade;
+    }
+
+    // Impede letras e caracteres especiais, aceita apenas números
+    document.getElementById('crmv').addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '').slice(0, 5);
+    });
+
+    document.getElementById('voltar').onclick = () => {
+      window.location.href = 'listagem_veterinario.html';
+    };
+
+    document.getElementById('formEditar').onsubmit = async (e) => {
+      e.preventDefault();
+
+      const crmv = document.getElementById('crmv').value;
+
+      if (!/^[0-9]{5}$/.test(crmv)) {
+        alert("O CRMV-SP deve conter exatamente 5 dígitos numéricos.");
+        return;
+      }
+
+      const dados = {
+        nome: document.getElementById('nome_veterinario').value,
+        crmv: crmv,
+        especialidade: document.getElementById('especialidade').value
+      };
+
+      const resposta = await fetch(
+        `http://localhost:3000/veterinarios/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        }
+      );
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(resultado.error || 'Não foi possível atualizar o veterinário.');
+      }
+
+      alert('Veterinário atualizado com sucesso!');
+      window.location.href = 'listagem_veterinario.html';
+    };
+
+    carregarDados();
+  </script>
 
 </body>
 </html>

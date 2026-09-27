@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novo Atendimento | Vital Vet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="servicos-page">
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <details><summary>Cadastros</summary><div class="submenu submenu-operacoes">
+      <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
+      <details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="listagem_animal.html">Listar</a></div></details>
+      <details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="listagem_veterinario.html">Listar</a></div></details>
+      <details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details>
+      <details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details>
+    </div></details>
+  </nav>
+  <main class="servicos-conteudo">
+    <header class="cabecalho-pagina"><h1>Novo Atendimento</h1></header>
+    <form id="formAtendimento" class="servicos-formulario">
+      <label for="animal_id">Paciente</label>
+      <select id="animal_id" name="animal_id" required disabled><option value="">Carregando pacientes...</option></select>
+      <label for="veterinario_id">Veterinário</label>
+      <select id="veterinario_id" name="veterinario_id" required disabled><option value="">Carregando veterinários...</option></select>
+      <label for="data">Data</label>
+      <input type="date" id="data" name="data" required>
+      <label for="hora">Horário</label>
+      <input type="time" id="hora" name="hora" step="1">
+      <label for="observacoes">Observações</label>
+      <textarea id="observacoes" name="observacoes" rows="4"></textarea>
+      <p id="mensagem" class="mensagem" role="alert" aria-live="polite"></p>
+      <div class="servicos-botoes">
+        <a class="botao-link" href="listagem_atendimento.html"><span class="material-icons" aria-hidden="true">arrow_back</span>Voltar</a>
+        <button class="botao-principal" id="salvar" type="submit" disabled><span class="material-icons" aria-hidden="true">save</span>Cadastrar atendimento</button>
+      </div>
+    </form>
+  </main>
+  <script>
+    const form = document.getElementById('formAtendimento');
+    const message = document.getElementById('mensagem');
+    const animalSelect = document.getElementById('animal_id');
+    const veterinarianSelect = document.getElementById('veterinario_id');
+    const saveButton = document.getElementById('salvar');
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+
+    async function readJson(response) {
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Falha na requisição (HTTP ${response.status}).`);
+      return data;
+    }
+
+    function localDate() {
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${now.getFullYear()}-${month}-${day}`;
+    }
+
+    function fillSelect(select, rows, getLabel, placeholder) {
+      select.replaceChildren(new Option(placeholder, ''));
+      rows.forEach((row) => select.add(new Option(getLabel(row), row.id)));
+      select.disabled = rows.length === 0;
+    }
+
+    async function loadOptions() {
+      message.textContent = 'Carregando pacientes e veterinários...';
+      try {
+        const [animals, veterinarians] = await Promise.all([
+          fetch(`${API_BASE}/animais`).then(readJson),
+          fetch(`${API_BASE}/veterinarios`).then(readJson)
+        ]);
+        fillSelect(animalSelect, animals, (animal) => `${animal.nome}${animal.especie ? ` (${animal.especie})` : ''}`, 'Selecione um paciente');
+        fillSelect(veterinarianSelect, veterinarians, (veterinarian) => veterinarian.nome, 'Selecione um veterinário');
+        if (!animals.length || !veterinarians.length) {
+          message.textContent = 'Cadastre ao menos um paciente e um veterinário antes de criar um atendimento.';
+          return;
+        }
+        message.textContent = '';
+        saveButton.disabled = false;
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    }
+
+    document.getElementById('data').value = localDate();
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message.className = 'mensagem';
+      message.textContent = '';
+      const payload = {
+        animal_id: Number(animalSelect.value),
+        veterinario_id: Number(veterinarianSelect.value),
+        data: document.getElementById('data').value,
+        hora: document.getElementById('hora').value || null,
+        observacoes: document.getElementById('observacoes').value.trim() || null,
+        valor_total: 0
+      };
+      try {
+        const attendance = await readJson(await fetch(`${API_BASE}/atendimentos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }));
+        window.location.href = `detalhes_atendimento.html?id=${encodeURIComponent(attendance.id)}`;
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    });
+
+    loadOptions();
+  </script>
+</body>
+</html>
