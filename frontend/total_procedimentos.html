@@ -1,17 +1,224 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<meta charset="UTF-8">
-	<title>Vital Vet - Total de Procedimentos</title>
-	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vital Vet - Total de Procedimentos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito:wght@500&family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-	<nav class="menu-principal" aria-label="Navegação principal">
-		<a href="index.html">Início</a>
-		<details><summary>Cadastros</summary><div class="submenu submenu-operacoes"><details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details><details><summary>Pacientes</summary><div class="submenu-interno"><a href="cadastro_animal.html">Cadastrar</a><a href="cadastro_animal.html">Listar</a></div></details><details><summary>Veterinários</summary><div class="submenu-interno"><a href="cadastro_veterinario.html">Cadastrar</a><a href="cadastro_veterinario.html">Listar</a></div></details><details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details><details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details></div></details>
-	</nav>
-	<h1>Total de Procedimentos</h1>
-	<p>Esta funcionalidade ainda está em desenvolvimento.</p>
+<body class="servicos-page">
+  <nav class="menu-principal" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <details><summary>Cadastros</summary><div class="submenu submenu-operacoes">
+      <details><summary>Tutores</summary><div class="submenu-interno"><a href="cadastro_tutor.html">Cadastrar</a><a href="listagem_tutor.html">Listar</a></div></details>
+      <details><summary>Pacientes</summary><div class="submenu-interno"><a href="listagem_animal.html">Listar</a></div></details>
+      <details><summary>Veterinários</summary><div class="submenu-interno"><a href="listagem_veterinario.html">Listar</a></div></details>
+      <details><summary>Serviços</summary><div class="submenu-interno"><a href="cadastro_servico.html">Cadastrar</a><a href="listagem_servico.html">Listar</a></div></details>
+      <details><summary>Atendimentos</summary><div class="submenu-interno"><a href="cadastro_atendimento.html">Cadastrar</a><a href="listagem_atendimento.html">Listar</a></div></details>
+    </div></details>
+  </nav>
+  <main class="servicos-conteudo">
+    <header class="cabecalho-pagina"><h1>Agenda de Pagamentos</h1></header>
+    <section class="servicos-card">
+      <div class="agenda-filtro">
+        <label for="dataAgenda">Data</label>
+        <input type="date" id="dataAgenda">
+      </div>
+      <p id="mensagemAgenda" class="mensagem" role="status" aria-live="polite"></p>
+      <div class="servicos-tabela-wrapper">
+        <table>
+          <thead><tr><th>Horário</th><th>Animal</th><th>Tutor</th><th>Total (R$)</th><th>Pagamento</th></tr></thead>
+          <tbody id="tabelaAgenda"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="servicos-card" id="pagamentoAtendimento" hidden aria-label="Pagamento do atendimento selecionado">
+      <header class="cabecalho-pagina"><h2>Atendimento selecionado</h2></header>
+      <dl class="servico-detalhes">
+        <dt>ID do atendimento</dt><dd id="idSelecionado"></dd>
+        <dt>Animal</dt><dd id="animalSelecionado"></dd>
+        <dt>Tutor</dt><dd id="tutorSelecionado"></dd>
+        <dt>Horário</dt><dd id="horarioSelecionado"></dd>
+        <dt>Veterinário</dt><dd id="veterinarioSelecionado"></dd>
+        <dt>Total a pagar</dt><dd id="totalSelecionado"></dd>
+        <dt>Status</dt><dd><span id="statusSelecionado" class="status-pagamento status-a-pagar">A pagar</span></dd>
+      </dl>
+      <h3>Serviços do atendimento</h3>
+      <div class="servicos-tabela-wrapper">
+        <table>
+          <thead><tr><th>Serviço</th><th>Categoria</th><th>Valor (R$)</th><th>Peso usado</th></tr></thead>
+          <tbody id="tabelaServicosSelecionados"></tbody>
+        </table>
+      </div>
+      <div class="servicos-botoes">
+        <button class="botao-principal" type="button" id="alternarPagamentoSelecionado"><span class="material-icons" aria-hidden="true">paid</span>Marcar como pago</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    const dateInput = document.getElementById('dataAgenda');
+    const message = document.getElementById('mensagemAgenda');
+    const tableBody = document.getElementById('tabelaAgenda');
+    const paymentPanel = document.getElementById('pagamentoAtendimento');
+    const paymentButton = document.getElementById('alternarPagamentoSelecionado');
+    let attendances = [];
+    let selectedAttendance = null;
+
+    function localDate() {
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${now.getFullYear()}-${month}-${day}`;
+    }
+
+    async function readJson(response) {
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Falha na requisição (HTTP ${response.status}).`);
+      return data;
+    }
+
+    function renderSelection(attendance) {
+      selectedAttendance = attendance;
+      const status = attendance.status_pagamento || 'a_pagar';
+      const isPaid = status === 'pago';
+      const services = Array.isArray(attendance.servicos) ? attendance.servicos : [];
+
+      const idElement = document.getElementById('idSelecionado');
+      idElement.replaceChildren();
+      const idLink = document.createElement('a');
+      idLink.href = `detalhes_atendimento.html?id=${encodeURIComponent(attendance.id)}`;
+      idLink.textContent = String(attendance.id);
+      idElement.appendChild(idLink);
+      document.getElementById('animalSelecionado').textContent = attendance.animal_nome || '—';
+      document.getElementById('tutorSelecionado').textContent = attendance.tutor_nome || '—';
+      document.getElementById('horarioSelecionado').textContent = attendance.hora ? attendance.hora.slice(0, 5) : 'Não informado';
+      document.getElementById('veterinarioSelecionado').textContent = attendance.veterinario_nome || '—';
+      document.getElementById('totalSelecionado').textContent = `R$ ${Number(attendance.valor_total ?? attendance.total ?? 0).toFixed(2)}`;
+
+      const servicesTable = document.getElementById('tabelaServicosSelecionados');
+      servicesTable.replaceChildren();
+      if (!services.length) {
+        const row = servicesTable.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 4;
+        cell.textContent = 'Nenhum serviço registrado.';
+      } else {
+        services.forEach((service) => {
+          const row = servicesTable.insertRow();
+          row.insertCell().textContent = service.nome || '—';
+          row.insertCell().textContent = service.categoria || '—';
+          row.insertCell().textContent = Number(service.valor).toFixed(2);
+          row.insertCell().textContent = service.peso_kg_calculo == null
+            ? '—'
+            : `${Number(service.peso_kg_calculo).toFixed(2)} kg`;
+        });
+      }
+
+      const statusElement = document.getElementById('statusSelecionado');
+      statusElement.textContent = isPaid ? 'Pago' : 'A pagar';
+      statusElement.className = `status-pagamento ${isPaid ? 'status-pago' : 'status-a-pagar'}`;
+      if (isPaid) {
+        paymentButton.disabled = true;
+        paymentButton.innerHTML = `<span class="material-icons" aria-hidden="true">check_circle</span>Atendimento pago`;
+      } else {
+        paymentButton.disabled = false;
+        paymentButton.innerHTML = `<span class="material-icons" aria-hidden="true">paid</span>Marcar como pago`;
+      }
+      paymentPanel.hidden = false;
+    }
+
+    async function selectAttendance(id) {
+      message.className = 'mensagem';
+      message.textContent = 'Carregando atendimento...';
+      try {
+        const attendance = await readJson(await fetch(`${API_BASE}/atendimentos/${encodeURIComponent(id)}`));
+        renderSelection(attendance);
+        message.textContent = '';
+        paymentPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error.message;
+      }
+    }
+
+    async function toggleSelectedPayment() {
+      if (!selectedAttendance || selectedAttendance.status_pagamento === 'pago') return;
+      const nextStatus = 'pago';
+      paymentButton.disabled = true;
+      try {
+        const attendance = await readJson(await fetch(`${API_BASE}/atendimentos/${encodeURIComponent(selectedAttendance.id)}/pagamento`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status_pagamento: nextStatus })
+        }));
+        renderSelection(attendance);
+        await loadAgenda(false);
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error.message;
+      } finally {
+        paymentButton.disabled = false;
+      }
+    }
+
+    async function loadAgenda(clearSelection = true) {
+      if (!dateInput.value) return;
+      if (clearSelection) {
+        selectedAttendance = null;
+        paymentPanel.hidden = true;
+      }
+      message.className = 'mensagem';
+      message.textContent = 'Carregando agenda do dia...';
+      tableBody.replaceChildren();
+      try {
+        attendances = await readJson(await fetch(`${API_BASE}/atendimentos?data=${encodeURIComponent(dateInput.value)}`));
+        attendances.sort((first, second) => String(first.hora || '').localeCompare(String(second.hora || '')) || Number(first.id) - Number(second.id));
+
+        if (!attendances.length) {
+          const row = tableBody.insertRow();
+          const cell = row.insertCell();
+          cell.colSpan = 5;
+          cell.textContent = 'Nenhum atendimento encontrado nesta data.';
+          message.textContent = '';
+          return;
+        }
+
+        attendances.forEach((attendance) => {
+          const row = tableBody.insertRow();
+          row.insertCell().textContent = attendance.hora ? attendance.hora.slice(0, 5) : '—';
+          const animalCell = row.insertCell();
+          const animalButton = document.createElement('button');
+          animalButton.type = 'button';
+          animalButton.className = 'botao-animal';
+          animalButton.textContent = attendance.animal_nome || 'Animal não informado';
+          animalButton.addEventListener('click', () => selectAttendance(attendance.id));
+          animalCell.appendChild(animalButton);
+          row.insertCell().textContent = attendance.tutor_nome || '—';
+          row.insertCell().textContent = Number(attendance.valor_total ?? attendance.total ?? 0).toFixed(2);
+          const statusCell = row.insertCell();
+          const status = attendance.status_pagamento || 'a_pagar';
+          const statusElement = document.createElement('span');
+          statusElement.className = `status-pagamento ${status === 'pago' ? 'status-pago' : 'status-a-pagar'}`;
+          statusElement.textContent = status === 'pago' ? 'Pago' : 'A pagar';
+          statusCell.appendChild(statusElement);
+        });
+        message.textContent = '';
+      } catch (error) {
+        message.classList.add('mensagem-erro');
+        message.textContent = error instanceof TypeError
+          ? 'Não foi possível conectar à API. Inicie o backend na porta 3000 e tente novamente.'
+          : error.message;
+      }
+    }
+
+    dateInput.value = localDate();
+    dateInput.addEventListener('change', () => loadAgenda(true));
+    paymentButton.addEventListener('click', toggleSelectedPayment);
+    loadAgenda(true);
+  </script>
 </body>
 </html>

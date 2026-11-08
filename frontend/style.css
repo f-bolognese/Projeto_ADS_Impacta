@@ -215,6 +215,90 @@
   background-color: #f0e9ff;
 }
 
+/* Agenda financeira de atendimentos */
+.agenda-filtro {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.agenda-filtro input {
+  margin-right: auto;
+}
+
+button.botao-animal,
+.servicos-page button.botao-animal {
+  display: inline;
+  min-height: 0;
+  padding: 5px 0;
+  border: 0;
+  border-radius: 0;
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: #000000 !important;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+button.botao-animal:hover,
+button.botao-animal:focus-visible,
+.servicos-page button.botao-animal:hover,
+.servicos-page button.botao-animal:focus-visible {
+  display: inline;
+  min-height: 0;
+  border-radius: 0;
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: #000000 !important;
+  text-decoration: none;
+}
+
+#pagamentoAtendimento {
+  margin-top: 18px;
+}
+
+/* Filtro de data da listagem de atendimentos */
+.atendimento-filtro {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 10px 0 18px;
+}
+
+.atendimento-filtro label {
+  font-weight: 700;
+}
+
+/* Status de pagamento dos atendimentos */
+.status-pagamento {
+  display: inline-block;
+  min-width: 74px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.status-pago {
+  background: #dff3e6;
+  color: #236b3a;
+}
+
+.status-a-pagar {
+  background: #fff0c2;
+  color: #7a5a00;
+}
+
 .acoes button {
   background-color: #6B4FA3;
   color: white;

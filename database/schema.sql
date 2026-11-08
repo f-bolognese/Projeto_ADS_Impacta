@@ -41,7 +41,9 @@ CREATE TABLE IF NOT EXISTS atendimento (
   data DATE NOT NULL,
   hora TIME,
   observacoes TEXT,
-  valor_total NUMERIC(10,2) NOT NULL
+  valor_total NUMERIC(10,2) NOT NULL,
+  status_pagamento VARCHAR(10) NOT NULL DEFAULT 'a_pagar'
+    CHECK (status_pagamento IN ('pago', 'a_pagar'))
 );
 
 CREATE TABLE IF NOT EXISTS atendimento_servico (

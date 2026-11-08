@@ -25,14 +25,14 @@
       <p id="mensagem" class="mensagem" role="status" aria-live="polite">Carregando atendimentos...</p>
       <a class="botao-link botao-principal" href="cadastro_atendimento.html"><span class="material-icons" aria-hidden="true">add</span>Novo atendimento</a>
     </div>
-    <div class="servicos-toolbar">
+    <div class="atendimento-filtro">
       <label for="filtroData">Data</label>
       <input type="date" id="filtroData">
       <button class="botao-link" type="button" id="limparFiltro"><span class="material-icons" aria-hidden="true">event_busy</span>Todas as datas</button>
     </div>
     <div class="servicos-tabela-wrapper">
       <table>
-        <thead><tr><th>ID</th><th>Data</th><th>Horário</th><th>Paciente</th><th>Veterinário</th><th>Total (R$)</th><th class="acoes">Ações</th></tr></thead>
+        <thead><tr><th>ID</th><th>Data</th><th>Horário</th><th>Paciente</th><th>Veterinário</th><th>Total (R$)</th><th>Pagamento</th><th class="acoes">Ações</th></tr></thead>
         <tbody id="tabelaAtendimentos"></tbody>
       </table>
     </div>
@@ -77,7 +77,7 @@
       if (!attendances.length) {
         const row = tableBody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 7;
+        cell.colSpan = 8;
         cell.textContent = 'Nenhum atendimento encontrado.';
         return;
       }
@@ -92,12 +92,20 @@
         addCell(row, attendance.animal_nome);
         addCell(row, attendance.veterinario_nome);
         addCell(row, Number(attendance.valor_total ?? attendance.total ?? 0).toFixed(2));
+        const statusCell = row.insertCell();
+        const status = attendance.status_pagamento || 'a_pagar';
+        const statusElement = document.createElement('span');
+        statusElement.className = `status-pagamento ${status === 'pago' ? 'status-pago' : 'status-a-pagar'}`;
+        statusElement.textContent = status === 'pago' ? 'Pago' : 'A pagar';
+        statusCell.appendChild(statusElement);
         const actions = row.insertCell();
         actions.className = 'acoes';
         const query = `?id=${encodeURIComponent(attendance.id)}`;
         addAction(actions, 'Detalhar', 'visibility', `detalhes_atendimento.html${query}`);
-        addAction(actions, 'Editar', 'edit', `editar_atendimento.html${query}`);
-        addAction(actions, 'Excluir', 'delete', null, () => deleteAttendance(attendance.id));
+        if (status !== 'pago') {
+          addAction(actions, 'Editar', 'edit', `editar_atendimento.html${query}`);
+          addAction(actions, 'Excluir', 'delete', null, () => deleteAttendance(attendance.id));
+        }
       });
     }
 

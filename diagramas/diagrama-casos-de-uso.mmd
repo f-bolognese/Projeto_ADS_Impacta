@@ -1,0 +1,68 @@
+flowchart LR
+    Usuario((Usuario da clinica))
+
+    subgraph CADASTROS[Cadastros]
+        UC1[Cadastrar tutor]
+        UC2[Consultar, alterar ou excluir tutor]
+        UC3[Cadastrar animal]
+        UC4[Consultar, alterar ou excluir animal]
+        UC5[Cadastrar veterinario]
+        UC6[Consultar, alterar ou excluir veterinario]
+        UC7[Cadastrar servico]
+        UC8[Consultar, alterar ou excluir servico]
+    end
+
+    subgraph ATENDIMENTOS[Atendimentos]
+        UC9[Cadastrar atendimento]
+        UC10[Consultar agenda diaria]
+        UC11[Visualizar detalhes do atendimento]
+        UC12[Alterar atendimento nao pago]
+        UC13[Excluir atendimento nao pago]
+        UC14[Adicionar servico]
+        UC15[Substituir servico]
+        UC16[Remover servico]
+        UC17[Calcular valor total pela soma dos serviços]
+        UC23[Calcular valor da medicação]
+        UC22[Bloquear alteração e exclusao de atendimento pago]
+    end
+
+    subgraph PAGAMENTOS[Pagamentos]
+        UC18[Selecionar atendimento da agenda]
+        UC19[Visualizar serviços e total do atendimento]
+        UC20[Marcar atendimento como pago]
+        UC21[Consultar fechamento diario]
+    end
+
+    Usuario --> UC1
+    Usuario --> UC2
+    Usuario --> UC3
+    Usuario --> UC4
+    Usuario --> UC5
+    Usuario --> UC6
+    Usuario --> UC7
+    Usuario --> UC8
+    Usuario --> UC9
+    Usuario --> UC10
+    Usuario --> UC11
+    Usuario --> UC12
+    Usuario --> UC13
+    Usuario --> UC14
+    Usuario --> UC15
+    Usuario --> UC16
+    Usuario --> UC18
+    Usuario --> UC19
+    Usuario --> UC20
+    Usuario --> UC21
+
+    UC9 -. inclui .-> UC17
+    UC14 -. inclui .-> UC17
+    UC15 -. inclui .-> UC17
+    UC16 -. inclui .-> UC17
+    UC14 -. estende .-> UC23
+    UC18 -. estende .-> UC10
+    UC20 -. pos-condicao .-> UC22
+
+    R1[Não excluir registros relacionados a outros cadastros]
+    R2[Medicação: gato R$35; cão conforme peso]
+    Usuario -.-> R1
+    UC23 -.-> R2

@@ -18,6 +18,16 @@ O Vital Vet foi pensado para facilitar o controle administrativo de uma clínica
 - Associação de serviços aos atendimentos, com valor registrado no momento do vínculo
 - Remoção ou substituição de um serviço aplicado incorretamente em um atendimento
 - Visualização dos serviços e do total por atendimento
+- Consulta da agenda e do fechamento financeiro por data
+- Bloqueio de edição, exclusão e alteração de serviços em atendimentos pagos
+- Cálculo de aplicação de medicação por espécie e peso
+
+## Diagramas do sistema
+
+Os diagramas UML do projeto estão disponíveis na pasta [diagramas](diagramas/README.md):
+
+- [Diagrama de classes](diagramas/diagrama-classes.mmd)
+- [Diagrama de casos de uso](diagramas/diagrama-casos-de-uso.mmd)
 
 ## AC 1: Cadastro de tutores
 
@@ -25,9 +35,10 @@ Na AC 1, o foco é a implementação do cadastro e do gerenciamento de tutores.
 O sistema permite cadastrar, listar, pesquisar, visualizar, editar e excluir as
 informações dos responsáveis pelos animais atendidos na clínica.
 
-Durante o cadastro, o CPF do tutor é validado para evitar informações
-inconsistentes ou duplicadas. A exclusão também considera os vínculos existentes
-no sistema, impedindo a remoção de tutores que possuam animais relacionados.
+Durante o cadastro, o CPF do tutor é validado e normalizado para conter 11 dígitos.
+O backend verifica duplicidade quando uma constraint de banco está disponível. A
+exclusão considera os vínculos existentes e impede a remoção de tutores que possuam
+animais relacionados.
 
 ## AC 2: Cadastro de animais
 
@@ -50,12 +61,22 @@ atendimentos.
 
 Caso um serviço seja associado incorretamente, é possível substituí-lo no próprio
 atendimento, sem criar outro registro de atendimento. Assim, os demais dados da
-consulta são mantidos.
+consulta são mantidos. O total é recalculado pela soma dos valores associados.
 
-## Próxima etapa: AC 4
+Para a categoria de aplicação de medicação, o valor é calculado automaticamente:
+R$ 35,00 para gatos; para cães, R$ 35,00 até 10 kg, R$ 45,00 até 20 kg,
+R$ 55,00 até 35 kg e R$ 65,00 acima de 35 kg. Outras espécies não têm esse valor calculado.
 
-A AC 4 dará sequência ao projeto com a implementação do cálculo e do registro do
-valor total a pagar pelo atendimento.
+## AC 4: Fechamento financeiro dos atendimentos
+
+A AC 4 implementa o controle financeiro diário dos atendimentos. Cada atendimento
+possui status `pago` ou `a_pagar`; o status pode ser alterado na listagem ou nos
+detalhes. O valor continua sendo recalculado pela soma dos serviços vinculados.
+
+A página `total_procedimentos.html` consulta os atendimentos de uma data e permite
+selecionar cada registro para visualizar seus serviços, valores e status. A API
+também disponibiliza o resumo diário por data com total geral, total pago, total
+pendente e quantidade de atendimentos em cada situação.
 
 ## Requisitos
 
@@ -93,6 +114,12 @@ Para atualizar um banco existente e permitir valores nulos no catálogo de servi
 psql -d vitalvet -f ../database/allow_nullable_service_value.sql
 ```
 
+Para adicionar o status de pagamento ao banco existente, execute como usuário proprietário da tabela `atendimento`:
+
+```bash
+psql -d vitalvet -f ../database/add_payment_status.sql
+```
+
 5. Conceda as permissões do banco ao usuário da aplicação (como proprietário das tabelas ou administrador):
 
 ```bash
@@ -119,6 +146,7 @@ Projeto/
 │   ├── scripts/
 │   │   └── apply-database-permissions.js
 │   ├── database_permissions.sql
+│   ├── grant_servico_permissions.sql
 │   ├── db.js
 │   ├── package.json
 │   ├── routes_animal.js
@@ -128,6 +156,7 @@ Projeto/
 │   ├── routes_veterinaria.js
 │   └── server.js
 ├── database/
+│   ├── add_payment_status.sql
 │   ├── allow_nullable_service_value.sql
 │   └── schema.sql
 ├── frontend/
@@ -221,7 +250,10 @@ O schema principal está em `database/schema.sql` e define as tabelas:
 - `/animais` — cadastro e gerenciamento de pacientes
 - `/veterinarios` — cadastro e gerenciamento de veterinários
 - `/servicos` — cadastro e gerenciamento de serviços
-- `/atendimentos` — registro e gerenciamento de atendimentos
+- `/atendimentos` — registro, consulta e gerenciamento de atendimentos
+- `/atendimentos?data=YYYY-MM-DD` — agenda de atendimentos por data
+- `/atendimentos/resumo-diario?data=YYYY-MM-DD` — totais e quantidades por status em uma data
+- `/atendimentos/:id/pagamento` — alteração do status de pagamento
 - `/atendimentos/:id/servicos` — associação, consulta, substituição e remoção de serviços de um atendimento
 
 ### Observações

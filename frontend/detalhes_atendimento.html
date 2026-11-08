@@ -33,6 +33,7 @@
         <dt>Horário</dt><dd id="hora"></dd>
         <dt>Observações</dt><dd id="observacoes"></dd>
         <dt>Total</dt><dd id="total"></dd>
+        <dt>Status do pagamento</dt><dd><span id="statusPagamento" class="status-pagamento status-a-pagar">A pagar</span></dd>
       </dl>
       <div class="servicos-botoes">
         <a class="botao-link" href="listagem_atendimento.html"><span class="material-icons" aria-hidden="true">arrow_back</span>Voltar</a>
@@ -138,6 +139,7 @@
 
     function renderServices(services) {
       servicesTable.replaceChildren();
+      const isPaid = attendance?.status_pagamento === 'pago';
       if (!services.length) {
         const row = servicesTable.insertRow();
         const cell = row.insertCell();
@@ -153,18 +155,23 @@
         setCell(row, Number(service.valor).toFixed(2));
         setCell(row, service.peso_kg_calculo == null ? '—' : `${Number(service.peso_kg_calculo).toFixed(2)} kg`);
         const replaceCell = row.insertCell();
-        const replacement = document.createElement('select');
-        replacement.setAttribute('aria-label', `Substituir ${service.nome} por`);
-        serviceCatalog.filter((item) => Number(item.id) !== Number(service.servico_id)).forEach((item) => {
-          const price = item.valor == null ? 'calculado no atendimento' : `R$ ${Number(item.valor).toFixed(2)}`;
-          replacement.add(new Option(`${item.nome} · ${price}`, item.id));
-        });
-        replacement.insertBefore(new Option('Selecione...', ''), replacement.firstChild);
-        replaceCell.appendChild(replacement);
         const actions = row.insertCell();
         actions.className = 'acoes';
-        addButton(actions, 'Substituir', 'swap_horiz', 'botao-principal', () => replaceService(service, replacement.value));
-        addButton(actions, 'Excluir', 'delete', 'botao-perigo', () => deleteService(service));
+        if (isPaid) {
+          replaceCell.textContent = 'Bloqueado: atendimento pago';
+          actions.textContent = 'Não permitido';
+        } else {
+          const replacement = document.createElement('select');
+          replacement.setAttribute('aria-label', `Substituir ${service.nome} por`);
+          serviceCatalog.filter((item) => Number(item.id) !== Number(service.servico_id)).forEach((item) => {
+            const price = item.valor == null ? 'calculado no atendimento' : `R$ ${Number(item.valor).toFixed(2)}`;
+            replacement.add(new Option(`${item.nome} · ${price}`, item.id));
+          });
+          replacement.insertBefore(new Option('Selecione...', ''), replacement.firstChild);
+          replaceCell.appendChild(replacement);
+          addButton(actions, 'Substituir', 'swap_horiz', 'botao-principal', () => replaceService(service, replacement.value));
+          addButton(actions, 'Excluir', 'delete', 'botao-perigo', () => deleteService(service));
+        }
       });
     }
 
@@ -180,11 +187,21 @@
       document.getElementById('hora').textContent = data.hora ? data.hora.slice(0, 5) : '—';
       document.getElementById('observacoes').textContent = data.observacoes || '—';
       document.getElementById('total').textContent = `R$ ${Number(data.valor_total ?? data.total ?? 0).toFixed(2)}`;
+      const status = data.status_pagamento || 'a_pagar';
+      const statusElement = document.getElementById('statusPagamento');
+      const isPaid = status === 'pago';
+      statusElement.textContent = isPaid ? 'Pago' : 'A pagar';
+      statusElement.className = `status-pagamento ${isPaid ? 'status-pago' : 'status-a-pagar'}`;
+      const addServiceForm = document.getElementById('formAdicionarServico');
+      addServiceForm.hidden = isPaid;
+      document.getElementById('mensagemServicos').textContent = isPaid
+        ? 'Serviços bloqueados: o atendimento já foi marcado como pago.'
+        : '';
       renderServices(Array.isArray(data.servicos) ? data.servicos : []);
       details.hidden = false;
       document.getElementById('editar').href = `editar_atendimento.html?id=${encodeURIComponent(data.id)}`;
-      document.getElementById('editar').hidden = false;
-      document.getElementById('excluirAtendimento').hidden = false;
+      document.getElementById('editar').hidden = isPaid;
+      document.getElementById('excluirAtendimento').hidden = isPaid;
       message.textContent = '';
     }
 

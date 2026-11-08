@@ -207,6 +207,7 @@ function attendanceSelect() {
                  a.hora,
                  a.observacoes,
                  a.valor_total,
+                 a.status_pagamento,
                  an.nome AS animal_nome,
                  an.especie AS animal_especie,
                  an.peso_kg AS animal_peso_kg,
@@ -272,6 +273,7 @@ function formatAttendance(row) {
     observacoes: row.observacoes,
     servicos: services,
     valor_total: total,
+    status_pagamento: row.status_pagamento || 'a_pagar',
     total
   };
 }
@@ -339,7 +341,7 @@ async function recalculateTotal(queryable, attendanceId) {
 
 async function lockAttendance(queryable, attendanceId) {
   const result = await queryable.query(
-    `SELECT a.id, an.especie, an.peso_kg
+    `SELECT a.id, a.status_pagamento, an.especie, an.peso_kg
      FROM public.atendimento a
      LEFT JOIN public.animal an ON an.id = a.animal_id
      WHERE a.id = $1
@@ -347,6 +349,12 @@ async function lockAttendance(queryable, attendanceId) {
     [attendanceId]
   );
   return result.rowCount ? result.rows[0] : null;
+}
+
+function requireUnpaidAttendance(attendance) {
+  if (attendance?.status_pagamento === 'pago') {
+    throw requestError(409, 'Atendimento pago nao permite alterar seus servicos.');
+  }
 }
 
 async function repriceMedicationServices(queryable, attendanceId, animal) {
@@ -424,6 +432,77 @@ router.get('/atendimentos', async (req, res) => {
   }
 });
 
+router.get('/atendimentos/resumo-diario', async (req, res) => {
+  const data = req.query.data;
+  if (!data || typeof data !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return res.status(400).json({ error: 'Informe a data no formato YYYY-MM-DD.' });
+  }
+
+  const parsedDate = new Date(`${data}T00:00:00.000Z`);
+  if (Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== data) {
+    return res.status(400).json({ error: 'Informe uma data valida no formato YYYY-MM-DD.' });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*)::INTEGER AS quantidade,
+              COALESCE(SUM(valor_total), 0)::NUMERIC(10,2) AS total_geral,
+              COALESCE(SUM(valor_total) FILTER (WHERE status_pagamento = 'pago'), 0)::NUMERIC(10,2) AS total_pago,
+              COALESCE(SUM(valor_total) FILTER (WHERE status_pagamento = 'a_pagar'), 0)::NUMERIC(10,2) AS total_a_pagar,
+              COUNT(*) FILTER (WHERE status_pagamento = 'pago')::INTEGER AS quantidade_pago,
+              COUNT(*) FILTER (WHERE status_pagamento = 'a_pagar')::INTEGER AS quantidade_a_pagar
+       FROM public.atendimento
+       WHERE data = $1::DATE`,
+      [data]
+    );
+    const row = result.rows[0];
+    return res.status(200).json({
+      data,
+      quantidade: row.quantidade,
+      total_geral: Number(row.total_geral),
+      total_pago: Number(row.total_pago),
+      total_a_pagar: Number(row.total_a_pagar),
+      quantidade_pago: row.quantidade_pago,
+      quantidade_a_pagar: row.quantidade_a_pagar
+    });
+  } catch (error) {
+    return databaseError(res, error);
+  }
+});
+
+router.patch('/atendimentos/:id/pagamento', async (req, res) => {
+  if (!validId(req.params.id)) {
+    return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
+  }
+
+  const status = req.body?.status_pagamento;
+  if (!['pago', 'a_pagar'].includes(status)) {
+    return res.status(400).json({ error: 'status_pagamento deve ser "pago" ou "a_pagar".' });
+  }
+
+  try {
+    const attendance = await transaction(async (client) => {
+      const current = await lockAttendance(client, req.params.id);
+      if (!current) throw requestError(404, 'Atendimento nao encontrado.');
+
+      if (current.status_pagamento === 'pago' && status !== 'pago') {
+        throw requestError(409, 'Atendimento pago nao pode voltar para a pagar.');
+      }
+
+      await client.query(
+        `UPDATE public.atendimento
+         SET status_pagamento = $1
+         WHERE id = $2`,
+        [status, req.params.id]
+      );
+      return loadAttendance(client, req.params.id);
+    });
+    return res.status(200).json(attendance);
+  } catch (error) {
+    return sendError(res, error);
+  }
+});
+
 router.get('/atendimentos/:id/servicos', async (req, res) => {
   if (!validId(req.params.id)) {
     return res.status(400).json({ error: 'O ID deve ser um numero inteiro positivo.' });
@@ -471,6 +550,7 @@ router.put('/atendimentos/:id', async (req, res) => {
     const attendance = await transaction(async (client) => {
       const current = await lockAttendance(client, req.params.id);
       if (!current) throw requestError(404, 'Atendimento nao encontrado.');
+      requireUnpaidAttendance(current);
 
       await client.query(
         `UPDATE public.atendimento
@@ -496,16 +576,22 @@ router.delete('/atendimentos/:id', async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      'DELETE FROM public.atendimento WHERE id = $1 RETURNING id',
-      [req.params.id]
-    );
-    if (!result.rowCount) {
-      return res.status(404).json({ error: 'Atendimento nao encontrado.' });
-    }
-    return res.status(200).json({ message: 'Atendimento excluido com sucesso.', id: Number(result.rows[0].id) });
+    const deletedId = await transaction(async (client) => {
+      const current = await lockAttendance(client, req.params.id);
+      if (!current) throw requestError(404, 'Atendimento nao encontrado.');
+      if (current.status_pagamento === 'pago') {
+        throw requestError(409, 'Atendimento pago nao pode ser excluido.');
+      }
+
+      const result = await client.query(
+        'DELETE FROM public.atendimento WHERE id = $1 RETURNING id',
+        [req.params.id]
+      );
+      return Number(result.rows[0].id);
+    });
+    return res.status(200).json({ message: 'Atendimento excluido com sucesso.', id: deletedId });
   } catch (error) {
-    return databaseError(res, error);
+    return sendError(res, error);
   }
 });
 
@@ -524,6 +610,7 @@ router.post('/atendimentos/:id/servicos', async (req, res) => {
     const attendance = await transaction(async (client) => {
       const visit = await lockAttendance(client, req.params.id);
       if (!visit) throw requestError(404, 'Atendimento nao encontrado.');
+      requireUnpaidAttendance(visit);
 
       const existing = await client.query(
         `SELECT id
@@ -574,6 +661,7 @@ router.put('/atendimentos/:id/servicos/:servicoId', async (req, res) => {
     const attendance = await transaction(async (client) => {
       const visit = await lockAttendance(client, req.params.id);
       if (!visit) throw requestError(404, 'Atendimento nao encontrado.');
+      requireUnpaidAttendance(visit);
 
       const current = await client.query(
         `SELECT id
@@ -624,6 +712,7 @@ router.delete('/atendimentos/:id/servicos/:servicoId', async (req, res) => {
     const attendance = await transaction(async (client) => {
       const visit = await lockAttendance(client, req.params.id);
       if (!visit) throw requestError(404, 'Atendimento nao encontrado.');
+      requireUnpaidAttendance(visit);
 
       const result = await client.query(
         `DELETE FROM public.atendimento_servico

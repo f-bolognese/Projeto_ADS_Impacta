@@ -1,0 +1,105 @@
+classDiagram
+    direction LR
+
+    class Tutor {
+        +Integer id
+        +String nome
+        +String cpf
+        +String telefone
+        +String endereco
+        +Date dataNascimento
+        +cadastrar()
+        +consultar()
+        +alterar()
+        +excluir()
+    }
+
+    class Animal {
+        +Integer id
+        +String nome
+        +Date dataNascimento
+        +String especie
+        +String raca
+        +String cor
+        +Decimal pesoKg
+        +cadastrar()
+        +consultar()
+        +alterar()
+        +excluir()
+    }
+
+    class Veterinario {
+        +Integer id
+        +String nome
+        +String especialidade
+        +String crmv
+        +cadastrar()
+        +consultar()
+        +alterar()
+        +excluir()
+    }
+
+    class Servico {
+        +Integer id
+        +String nome
+        +String categoria
+        +Decimal valor
+        +cadastrar()
+        +consultar()
+        +alterar()
+        +excluir()
+    }
+
+    class Atendimento {
+        +Integer id
+        +Date data
+        +Time hora
+        +String observacoes
+        +Decimal valorTotalDerivado
+        +StatusPagamento statusPagamento
+        +calcularValorTotal()
+        +marcarComoPago()
+        +adicionarServico()
+        +substituirServico()
+        +removerServico()
+        +podeSerAlterado()
+    }
+
+    class AtendimentoServico {
+        +Integer id
+        +Decimal valorCobradoNaAssociacao
+        <<association class>>
+    }
+
+    class StatusPagamento {
+        <<enumeration>>
+        a_pagar
+        pago
+    }
+
+    class FechamentoDiario {
+        <<projection>>
+        +Date data
+        +Integer quantidadeAtendimentos
+        +Integer quantidadePago
+        +Integer quantidadeAPagar
+        +Decimal totalGeral
+        +Decimal totalPago
+        +Decimal totalAPagar
+        +calcular()
+    }
+
+    Tutor "1" --> "0..*" Animal : possui
+    Animal "1" --> "0..*" Atendimento : recebe
+    Veterinario "1" --> "0..*" Atendimento : realiza
+    Atendimento "1" --> "0..*" AtendimentoServico : vincula
+    Servico "1" --> "0..*" AtendimentoServico : participa de
+    AtendimentoServico --> Atendimento
+    AtendimentoServico --> Servico
+    Atendimento --> StatusPagamento : possui
+    FechamentoDiario ..> "0..*" Atendimento : agrega por data
+
+    note for AtendimentoServico "Uniqueness: (atendimentoId, servicoId)"
+    note for Atendimento "Bloqueado quando statusPagamento = pago"
+    note for FechamentoDiario "Entidade derivada: não é persistida no banco"
+    note for AtendimentoServico "O valor é o preço registrado no momento da associação"
