@@ -266,6 +266,6 @@ O schema principal está em `database/schema.sql` e define as tabelas:
 
 Este projeto não apresenta arquivo de licença explícito no repositório, sendo indicado como material de estudo e desenvolvimento local.
 
-## Autor
+## Autora
 
 Projeto acadêmico desenvolvido para gestão de atendimentos veterinários com backend em Node.js e banco PostgreSQL.
